@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+BASE_DIR=$(dirname "${BASH_SOURCE[0]:-$0}")
+cd "${BASE_DIR}/.." || exit 127
+
+# shellcheck source=../bin/scripts/logging.sh
+. bin/scripts/logging.sh
+# shellcheck source=../bin/scripts/utils.sh
+. bin/scripts/utils.sh
+
+log_info "Loading virtual environment..."
+source .venv/bin/activate
+
+log_info "Sorting python imports..."
+python3 -m isort --profile black .
+
+log_info "Formatting python code..."
+python3 -m black .

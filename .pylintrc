@@ -1,0 +1,10 @@
+[MAIN]
+
+py-version=3.11.6
+
+disable=
+    missing-docstring,
+    fixme,
+    import-error,
+    too-few-public-methods,
+    line-too-long,

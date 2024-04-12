@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+BASE_DIR=$(dirname "${BASH_SOURCE[0]:-$0}")
+cd "${BASE_DIR}/.." || exit 127
+
+# shellcheck source=../bin/scripts/logging.sh
+. bin/scripts/logging.sh
+# shellcheck source=../bin/scripts/utils.sh
+. bin/scripts/utils.sh
+
+PROGRAM=$(basename "${BASH_SOURCE[0]:-$0}")
+VERSION=0.7.0
+
+function display_help() {
+  cat <<EOF
+  $(help_title_section Usage)
+    ${PROGRAM} [options]
+
+  $(help_title_section Options)
+    -h --help         Show this screen.
+    -v --version      Show version.
+EOF
+}
+
+while [ ! $# -eq 0 ]; do
+  case "$1" in
+    -h | --help)
+      display_help
+      exit 0
+      ;;
+    -v | --version)
+      display_version "${VERSION}" "${PROGRAM}"
+      exit 0
+      ;;
+    *)
+      display_help >&2
+      exit 1
+      ;;
+  esac
+
+  shift
+done
+
+if not_installed "asdf"; then
+  echo_warning "
+    We are using asdf (https://github.com/asdf-vm/asdf) to manage tool
+    dependencies, since it was not found on your system we cannot ensure that you
+    are using the correct versions of all the tools. Please install it and run
+    this script again, or proceed at your own peril.
+  "
+else
+  set +e
+  asdf plugin add python
+  set -e
+
+  asdf install python $(cat .tool-versions | grep python | cut -d' ' -f2)
+fi
+
+log_info "setup" "Creating virtual environment..."
+python3 -m venv .venv
+
+log_info "setup" "Activating virtual environment..."
+source .venv/bin/activate
+
+log_info "setup" "Installing project dependencies..."
+python3 -m pip install -r requirements.txt
+
+log_info "setup" "Installing dev dependencies..."
+python3 -m pip install -r requirements-dev.txt
+
+log_info "setup" "Register pre-commit as git hook..."
+python3 -m pre_commit install
