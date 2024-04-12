@@ -156,3 +156,5 @@ data/p12/*
 # logs
 data/logs/*
 !data/logs/.gitkeep
+
+.idea
