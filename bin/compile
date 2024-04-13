@@ -45,4 +45,4 @@ done
 
 source .venv/bin/activate
 
-echo "Program not implemented yet."
+python -m src.main

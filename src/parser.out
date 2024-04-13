@@ -1,0 +1,287 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    COLON
+    DOT
+    ELSE
+    IF
+    IS_EQUAL
+    IS_GREATER
+    IS_GREATER_EQUAL
+    IS_LESS
+    IS_LESS_EQUAL
+    PRINT_STRING
+    SEMICOLON
+    THEN
+    WORD
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> statements
+Rule 2     statements -> statements statement
+Rule 3     statements -> statement
+Rule 4     statement -> expression
+Rule 5     expression -> NUMBER
+Rule 6     expression -> STRING
+Rule 7     expression -> arithmetic_op
+Rule 8     arithmetic_op -> expression expression PLUS
+Rule 9     arithmetic_op -> expression expression MINUS
+Rule 10    arithmetic_op -> expression expression TIMES
+Rule 11    arithmetic_op -> expression expression DIVIDE
+Rule 12    empty -> <empty>
+
+Terminals, with rules where they appear
+
+COLON                :
+DIVIDE               : 11
+DOT                  :
+ELSE                 :
+IF                   :
+IS_EQUAL             :
+IS_GREATER           :
+IS_GREATER_EQUAL     :
+IS_LESS              :
+IS_LESS_EQUAL        :
+MINUS                : 9
+NUMBER               : 5
+PLUS                 : 8
+PRINT_STRING         :
+SEMICOLON            :
+STRING               : 6
+THEN                 :
+TIMES                : 10
+WORD                 :
+error                :
+
+Nonterminals, with rules where they appear
+
+arithmetic_op        : 7
+empty                :
+expression           : 4 8 8 9 9 10 10 11 11
+program              : 0
+statement            : 2 3
+statements           : 1 2
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . statements
+    (2) statements -> . statements statement
+    (3) statements -> . statement
+    (4) statement -> . expression
+    (5) expression -> . NUMBER
+    (6) expression -> . STRING
+    (7) expression -> . arithmetic_op
+    (8) arithmetic_op -> . expression expression PLUS
+    (9) arithmetic_op -> . expression expression MINUS
+    (10) arithmetic_op -> . expression expression TIMES
+    (11) arithmetic_op -> . expression expression DIVIDE
+
+    NUMBER          shift and go to state 5
+    STRING          shift and go to state 6
+
+    program                        shift and go to state 1
+    statements                     shift and go to state 2
+    statement                      shift and go to state 3
+    expression                     shift and go to state 4
+    arithmetic_op                  shift and go to state 7
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> statements .
+    (2) statements -> statements . statement
+    (4) statement -> . expression
+    (5) expression -> . NUMBER
+    (6) expression -> . STRING
+    (7) expression -> . arithmetic_op
+    (8) arithmetic_op -> . expression expression PLUS
+    (9) arithmetic_op -> . expression expression MINUS
+    (10) arithmetic_op -> . expression expression TIMES
+    (11) arithmetic_op -> . expression expression DIVIDE
+
+    $end            reduce using rule 1 (program -> statements .)
+    NUMBER          shift and go to state 5
+    STRING          shift and go to state 6
+
+    statement                      shift and go to state 8
+    expression                     shift and go to state 4
+    arithmetic_op                  shift and go to state 7
+
+state 3
+
+    (3) statements -> statement .
+
+    NUMBER          reduce using rule 3 (statements -> statement .)
+    STRING          reduce using rule 3 (statements -> statement .)
+    $end            reduce using rule 3 (statements -> statement .)
+
+
+state 4
+
+    (4) statement -> expression .
+    (8) arithmetic_op -> expression . expression PLUS
+    (9) arithmetic_op -> expression . expression MINUS
+    (10) arithmetic_op -> expression . expression TIMES
+    (11) arithmetic_op -> expression . expression DIVIDE
+    (5) expression -> . NUMBER
+    (6) expression -> . STRING
+    (7) expression -> . arithmetic_op
+    (8) arithmetic_op -> . expression expression PLUS
+    (9) arithmetic_op -> . expression expression MINUS
+    (10) arithmetic_op -> . expression expression TIMES
+    (11) arithmetic_op -> . expression expression DIVIDE
+
+  ! shift/reduce conflict for NUMBER resolved as shift
+  ! shift/reduce conflict for STRING resolved as shift
+    $end            reduce using rule 4 (statement -> expression .)
+    NUMBER          shift and go to state 5
+    STRING          shift and go to state 6
+
+  ! NUMBER          [ reduce using rule 4 (statement -> expression .) ]
+  ! STRING          [ reduce using rule 4 (statement -> expression .) ]
+
+    expression                     shift and go to state 9
+    arithmetic_op                  shift and go to state 7
+
+state 5
+
+    (5) expression -> NUMBER .
+
+    NUMBER          reduce using rule 5 (expression -> NUMBER .)
+    STRING          reduce using rule 5 (expression -> NUMBER .)
+    $end            reduce using rule 5 (expression -> NUMBER .)
+    PLUS            reduce using rule 5 (expression -> NUMBER .)
+    MINUS           reduce using rule 5 (expression -> NUMBER .)
+    TIMES           reduce using rule 5 (expression -> NUMBER .)
+    DIVIDE          reduce using rule 5 (expression -> NUMBER .)
+
+
+state 6
+
+    (6) expression -> STRING .
+
+    NUMBER          reduce using rule 6 (expression -> STRING .)
+    STRING          reduce using rule 6 (expression -> STRING .)
+    $end            reduce using rule 6 (expression -> STRING .)
+    PLUS            reduce using rule 6 (expression -> STRING .)
+    MINUS           reduce using rule 6 (expression -> STRING .)
+    TIMES           reduce using rule 6 (expression -> STRING .)
+    DIVIDE          reduce using rule 6 (expression -> STRING .)
+
+
+state 7
+
+    (7) expression -> arithmetic_op .
+
+    NUMBER          reduce using rule 7 (expression -> arithmetic_op .)
+    STRING          reduce using rule 7 (expression -> arithmetic_op .)
+    $end            reduce using rule 7 (expression -> arithmetic_op .)
+    PLUS            reduce using rule 7 (expression -> arithmetic_op .)
+    MINUS           reduce using rule 7 (expression -> arithmetic_op .)
+    TIMES           reduce using rule 7 (expression -> arithmetic_op .)
+    DIVIDE          reduce using rule 7 (expression -> arithmetic_op .)
+
+
+state 8
+
+    (2) statements -> statements statement .
+
+    NUMBER          reduce using rule 2 (statements -> statements statement .)
+    STRING          reduce using rule 2 (statements -> statements statement .)
+    $end            reduce using rule 2 (statements -> statements statement .)
+
+
+state 9
+
+    (8) arithmetic_op -> expression expression . PLUS
+    (9) arithmetic_op -> expression expression . MINUS
+    (10) arithmetic_op -> expression expression . TIMES
+    (11) arithmetic_op -> expression expression . DIVIDE
+    (8) arithmetic_op -> expression . expression PLUS
+    (9) arithmetic_op -> expression . expression MINUS
+    (10) arithmetic_op -> expression . expression TIMES
+    (11) arithmetic_op -> expression . expression DIVIDE
+    (5) expression -> . NUMBER
+    (6) expression -> . STRING
+    (7) expression -> . arithmetic_op
+    (8) arithmetic_op -> . expression expression PLUS
+    (9) arithmetic_op -> . expression expression MINUS
+    (10) arithmetic_op -> . expression expression TIMES
+    (11) arithmetic_op -> . expression expression DIVIDE
+
+    PLUS            shift and go to state 10
+    MINUS           shift and go to state 11
+    TIMES           shift and go to state 12
+    DIVIDE          shift and go to state 13
+    NUMBER          shift and go to state 5
+    STRING          shift and go to state 6
+
+    expression                     shift and go to state 9
+    arithmetic_op                  shift and go to state 7
+
+state 10
+
+    (8) arithmetic_op -> expression expression PLUS .
+
+    NUMBER          reduce using rule 8 (arithmetic_op -> expression expression PLUS .)
+    STRING          reduce using rule 8 (arithmetic_op -> expression expression PLUS .)
+    $end            reduce using rule 8 (arithmetic_op -> expression expression PLUS .)
+    PLUS            reduce using rule 8 (arithmetic_op -> expression expression PLUS .)
+    MINUS           reduce using rule 8 (arithmetic_op -> expression expression PLUS .)
+    TIMES           reduce using rule 8 (arithmetic_op -> expression expression PLUS .)
+    DIVIDE          reduce using rule 8 (arithmetic_op -> expression expression PLUS .)
+
+
+state 11
+
+    (9) arithmetic_op -> expression expression MINUS .
+
+    NUMBER          reduce using rule 9 (arithmetic_op -> expression expression MINUS .)
+    STRING          reduce using rule 9 (arithmetic_op -> expression expression MINUS .)
+    $end            reduce using rule 9 (arithmetic_op -> expression expression MINUS .)
+    PLUS            reduce using rule 9 (arithmetic_op -> expression expression MINUS .)
+    MINUS           reduce using rule 9 (arithmetic_op -> expression expression MINUS .)
+    TIMES           reduce using rule 9 (arithmetic_op -> expression expression MINUS .)
+    DIVIDE          reduce using rule 9 (arithmetic_op -> expression expression MINUS .)
+
+
+state 12
+
+    (10) arithmetic_op -> expression expression TIMES .
+
+    NUMBER          reduce using rule 10 (arithmetic_op -> expression expression TIMES .)
+    STRING          reduce using rule 10 (arithmetic_op -> expression expression TIMES .)
+    $end            reduce using rule 10 (arithmetic_op -> expression expression TIMES .)
+    PLUS            reduce using rule 10 (arithmetic_op -> expression expression TIMES .)
+    MINUS           reduce using rule 10 (arithmetic_op -> expression expression TIMES .)
+    TIMES           reduce using rule 10 (arithmetic_op -> expression expression TIMES .)
+    DIVIDE          reduce using rule 10 (arithmetic_op -> expression expression TIMES .)
+
+
+state 13
+
+    (11) arithmetic_op -> expression expression DIVIDE .
+
+    NUMBER          reduce using rule 11 (arithmetic_op -> expression expression DIVIDE .)
+    STRING          reduce using rule 11 (arithmetic_op -> expression expression DIVIDE .)
+    $end            reduce using rule 11 (arithmetic_op -> expression expression DIVIDE .)
+    PLUS            reduce using rule 11 (arithmetic_op -> expression expression DIVIDE .)
+    MINUS           reduce using rule 11 (arithmetic_op -> expression expression DIVIDE .)
+    TIMES           reduce using rule 11 (arithmetic_op -> expression expression DIVIDE .)
+    DIVIDE          reduce using rule 11 (arithmetic_op -> expression expression DIVIDE .)
+
+WARNING:
+WARNING: Conflicts:
+WARNING:
+WARNING: shift/reduce conflict for NUMBER in state 4 resolved as shift
+WARNING: shift/reduce conflict for STRING in state 4 resolved as shift
