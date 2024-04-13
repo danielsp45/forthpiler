@@ -1,2 +1,4 @@
 requests==2.31.0
 beautifulsoup4==4.12.3
+ply==3.11
+typing-extensions==4.11.0
