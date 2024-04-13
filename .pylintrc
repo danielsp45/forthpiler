@@ -1,6 +1,6 @@
 [MAIN]
 
-py-version=3.11.6
+py-version=3.12.0
 
 disable=
     missing-docstring,

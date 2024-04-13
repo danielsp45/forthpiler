@@ -146,15 +146,5 @@ cython_debug/
 # vscode
 .vscode/
 
-# p12
-data/p12/*
-!data/p12/ca.p12
-!data/p12/server.p12
-!data/p12/userdata.p12
-!data/p12/tsa.p12
-
-# logs
-data/logs/*
-!data/logs/.gitkeep
-
 .idea
+parser.out
