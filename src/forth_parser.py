@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-from src.forthast import AbstractSyntaxTree, Operator, OperatorType, Number
+from src.forth_ast import AbstractSyntaxTree, Operator, OperatorType, Number
 
 
 class ForthParser:
@@ -13,7 +13,7 @@ class ForthParser:
         p[0] = AbstractSyntaxTree(p[1])
 
     def p_grammar_empty(self, p):
-        "grammar : "
+        "grammar :"
         p[0] = []
 
     def p_grammar_expression(self, p):
@@ -30,26 +30,26 @@ class ForthParser:
 
     def p_operator(self, p):
         """operator : PLUS
-                    | MINUS
-                    | TIMES
-                    | DIVIDE
-                    | EXP
-                    | MOD
-                    | SLASH_MOD"""
+        | MINUS
+        | TIMES
+        | DIVIDE
+        | EXP
+        | MOD
+        | SLASH_MOD"""
         match p[1]:
-            case '+':
+            case "+":
                 p[0] = Operator(OperatorType.PLUS)
-            case '-':
+            case "-":
                 p[0] = Operator(OperatorType.MINUS)
-            case '*':
+            case "*":
                 p[0] = Operator(OperatorType.TIMES)
-            case '/':
+            case "/":
                 p[0] = Operator(OperatorType.DIVIDE)
-            case '**':
+            case "**":
                 p[0] = Operator(OperatorType.EXP)
-            case 'MOD':
+            case "MOD":
                 p[0] = Operator(OperatorType.MOD)
-            case '/MOD':
+            case "/MOD":
                 p[0] = Operator(OperatorType.SLASH_MOD)
 
     def p_error(self, p):

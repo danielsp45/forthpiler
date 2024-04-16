@@ -1,5 +1,5 @@
-from src.forthparser import ForthParser
-from src.forthlex import ForthLex
+from src.forth_parser import ForthParser
+from src.forth_lexer import ForthLex
 
 
 def main():

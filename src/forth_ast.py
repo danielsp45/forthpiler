@@ -59,7 +59,7 @@ class AbstractSyntaxTree:
         self.expressions = expressions
 
     def __repr__(self):
-        expressions_repr = ', '.join([str(expr) for expr in self.expressions])
+        expressions_repr = ", ".join([str(expr) for expr in self.expressions])
         return f"AST(expressions=[{expressions_repr}])"
 
     def __eq__(self, other):
