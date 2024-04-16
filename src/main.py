@@ -9,7 +9,7 @@ def main():
     while True:
         try:
             s = input("forth >> ")
-        except EOFError or KeyboardInterrupt:
+        except (EOFError, KeyboardInterrupt):
             break
         if not s:
             continue
