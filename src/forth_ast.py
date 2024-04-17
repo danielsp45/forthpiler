@@ -15,6 +15,10 @@ class Expression(ABC):
     def __eq__(self, other):
         pass
 
+    @abstractmethod
+    def evaluate(self):
+        pass
+
 
 class Number(Expression):
     def __init__(self, number: int):
@@ -28,6 +32,10 @@ class Number(Expression):
     @override
     def __eq__(self, other):
         return self.number == other.number
+
+    @override
+    def evaluate(self):
+        return f"pushi {self.number}"
 
 
 class OperatorType(Enum):
@@ -53,6 +61,24 @@ class Operator(Expression):
     def __eq__(self, other):
         return self.operator_type == other.operator_type
 
+    @override
+    def evaluate(self):
+        match self.operator_type:
+            case OperatorType.PLUS:
+                return "add"
+            case OperatorType.MINUS:
+                return "sub"
+            case OperatorType.TIMES:
+                return "mul"
+            case OperatorType.DIVIDE:
+                return "div"
+            case OperatorType.EXP:
+                raise NotImplementedError
+            case OperatorType.MOD:
+                return "mod"
+            case OperatorType.SLASH_MOD:
+                raise NotImplementedError
+
 
 class AbstractSyntaxTree:
     def __init__(self, expressions: list[Expression]):
@@ -64,3 +90,6 @@ class AbstractSyntaxTree:
 
     def __eq__(self, other):
         return self.expressions == other.expressions
+
+    def evaluate(self):
+        return "\n".join([expr.evaluate() for expr in self.expressions])

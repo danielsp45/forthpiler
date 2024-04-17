@@ -1,5 +1,6 @@
 import ply.yacc as yacc
-from src.forth_ast import AbstractSyntaxTree, Operator, OperatorType, Number
+
+from src.forth_ast import AbstractSyntaxTree, Number, Operator, OperatorType
 
 
 class ForthParser:

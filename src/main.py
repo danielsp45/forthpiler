@@ -1,5 +1,6 @@
-from src.forth_parser import ForthParser
+from src.forth_ast import AbstractSyntaxTree
 from src.forth_lexer import ForthLex
+from src.forth_parser import ForthParser
 
 
 def main():
@@ -13,9 +14,10 @@ def main():
             break
         if not s:
             continue
-        result = parser.parse(s)
+
+        result: AbstractSyntaxTree = parser.parse(s)
         if result:
-            print(result)
+            print(result.evaluate())
 
 
 if __name__ == "__main__":

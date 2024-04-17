@@ -8,7 +8,7 @@ pushi 3
 add
 writei
 """
-    assert vmapi.run_code(code) == '5'
+    assert vmapi.run_code(code) == "5"
 
 
 def test_swap():
@@ -18,4 +18,4 @@ pushi 3
 swap
 writei
 """
-    assert vmapi.run_code(code) == '2'
+    assert vmapi.run_code(code) == "2"
