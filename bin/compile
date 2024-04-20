@@ -45,4 +45,4 @@ done
 
 source .venv/bin/activate
 
-python -m src.main
+python3 -m forthpiler

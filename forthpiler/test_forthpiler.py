@@ -1,7 +1,13 @@
-from forth_ast import AbstractSyntaxTree, Number, Operator, OperatorType, Literal, Function
-
-from forth_lexer import ForthLex
-from forth_parser import ForthParser
+from forthpiler.ast import (
+    AbstractSyntaxTree,
+    Function,
+    Literal,
+    Number,
+    Operator,
+    OperatorType,
+)
+from forthpiler.lexer import ForthLex
+from forthpiler.parser import ForthParser
 
 lexer = ForthLex().build()
 parser = ForthParser(lexer)
@@ -68,7 +74,10 @@ def test_function():
     code = """: add 3 4 + ; add"""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            Function("add", AbstractSyntaxTree([Number(3), Number(4), Operator(OperatorType.PLUS)])),
+            Function(
+                "add",
+                AbstractSyntaxTree([Number(3), Number(4), Operator(OperatorType.PLUS)]),
+            ),
             Literal("add"),
         ]
     )

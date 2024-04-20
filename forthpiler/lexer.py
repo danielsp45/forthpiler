@@ -6,7 +6,17 @@ class ForthLex(object):
         self.lexer = None
 
     tokens = (
-        "NUMBER", "PLUS", "MINUS", "TIMES", "DIVIDE", "EXP", "MOD", "SLASH_MOD", "COLON", "SEMICOLON", "LITERAL"
+        "NUMBER",
+        "PLUS",
+        "MINUS",
+        "TIMES",
+        "DIVIDE",
+        "EXP",
+        "MOD",
+        "SLASH_MOD",
+        "COLON",
+        "SEMICOLON",
+        "LITERAL",
     )
 
     t_PLUS = r"\+"
