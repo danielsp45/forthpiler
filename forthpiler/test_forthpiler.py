@@ -1,4 +1,4 @@
-from forthpiler.ast import (
+from forthpiler.syntax import (
     AbstractSyntaxTree,
     Function,
     Literal,

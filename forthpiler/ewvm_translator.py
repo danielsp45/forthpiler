@@ -1,4 +1,4 @@
-import forthpiler.ast as ast
+import forthpiler.syntax as ast
 
 
 class EWVMTranslator(ast.Translator):

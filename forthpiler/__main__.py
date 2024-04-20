@@ -1,7 +1,7 @@
 from enum import Enum
 
 from ewvmapi.ewvm_api import run_code
-from forthpiler.ast import AbstractSyntaxTree
+from forthpiler.syntax import AbstractSyntaxTree
 from forthpiler.ewvm_translator import EWVMTranslator
 from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser

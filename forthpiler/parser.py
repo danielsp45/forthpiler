@@ -1,6 +1,6 @@
 import ply.yacc as yacc
 
-import forthpiler.ast as ast
+import forthpiler.syntax as ast
 
 
 class ForthParser:
