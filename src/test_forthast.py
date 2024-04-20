@@ -1,6 +1,6 @@
-from src.forth_ast import AbstractSyntaxTree, Number, Operator, OperatorType
-from src.forth_lexer import ForthLex
-from src.forth_parser import ForthParser
+from forth_ast import AbstractSyntaxTree, Number, Operator, OperatorType
+from forth_lexer import ForthLex
+from forth_parser import ForthParser
 
 lexer = ForthLex().build()
 parser = ForthParser(lexer)
