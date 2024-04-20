@@ -1,4 +1,4 @@
-import ewvm_api
+from ewvmapi import ewvm_api
 
 
 def test_simple_add():

@@ -1,15 +1,22 @@
 from enum import Enum
+
 from ewvmapi.ewvm_api import run_code
-from forth_ast import AbstractSyntaxTree
-from forth_lexer import ForthLex
-from forth_parser import ForthParser
-from ewvm_translator import EWVMTranslator
+from forthpiler.syntax import AbstractSyntaxTree
+from forthpiler.ewvm_translator import EWVMTranslator
+from forthpiler.lexer import ForthLex
+from forthpiler.parser import ForthParser
 
 
 class InterpretingMode(Enum):
     PARSE = ("parse >> ", lambda result: print(result.__repr__()))
-    TRANSLATE = ("translate >> ", lambda result: print('\n'.join(result.evaluate(EWVMTranslator()))))
-    RUN = ("run >> ", lambda result: print(run_code('\n'.join(result.evaluate(EWVMTranslator())))))
+    TRANSLATE = (
+        "translate >> ",
+        lambda result: print("\n".join(result.evaluate(EWVMTranslator()))),
+    )
+    RUN = (
+        "run >> ",
+        lambda result: print(run_code("\n".join(result.evaluate(EWVMTranslator())))),
+    )
 
     def __init__(self, prefix, action):
         self.prefix = prefix
@@ -22,7 +29,7 @@ def main():
     commands = ("/parse", "/run", "/translate")
     mode = InterpretingMode.TRANSLATE
     print(f"Starting in {mode.name}.")
-    print(f"Change to other interpreter modes with {", ".join(commands)}")
+    print(f"Change to other interpreter modes with {', '.join(commands)}")
 
     while True:
         try:
