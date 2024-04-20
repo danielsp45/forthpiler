@@ -1,4 +1,5 @@
-from forth_ast import AbstractSyntaxTree, Number, Operator, OperatorType
+from forth_ast import AbstractSyntaxTree, Number, Operator, OperatorType, Literal, Function
+
 from forth_lexer import ForthLex
 from forth_parser import ForthParser
 
@@ -45,5 +46,29 @@ def test_all_operators():
             Operator(OperatorType.MOD),
             Number(7),
             Operator(OperatorType.SLASH_MOD),
+        ]
+    )
+
+
+def test_literal():
+    code = """Boas Pessoal .  3 2 +"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Literal("Boas"),
+            Literal("Pessoal"),
+            Literal("."),
+            Number(3),
+            Number(2),
+            Operator(OperatorType.PLUS),
+        ]
+    )
+
+
+def test_function():
+    code = """: add 3 4 + ; add"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Function("add", AbstractSyntaxTree([Number(3), Number(4), Operator(OperatorType.PLUS)])),
+            Literal("add"),
         ]
     )
