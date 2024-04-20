@@ -1,3 +1,5 @@
+from forthpiler.lexer import ForthLex
+from forthpiler.parser import ForthParser
 from forthpiler.syntax import (
     AbstractSyntaxTree,
     Function,
@@ -6,8 +8,6 @@ from forthpiler.syntax import (
     Operator,
     OperatorType,
 )
-from forthpiler.lexer import ForthLex
-from forthpiler.parser import ForthParser
 
 lexer = ForthLex().build()
 parser = ForthParser(lexer)

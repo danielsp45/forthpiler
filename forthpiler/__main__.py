@@ -1,10 +1,13 @@
 from enum import Enum
 
+from prompt_toolkit import PromptSession
+from prompt_toolkit.patch_stdout import patch_stdout
+
 from ewvmapi.ewvm_api import run_code
-from forthpiler.syntax import AbstractSyntaxTree
 from forthpiler.ewvm_translator import EWVMTranslator
 from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
+from forthpiler.syntax import AbstractSyntaxTree
 
 
 class InterpretingMode(Enum):
@@ -26,27 +29,28 @@ class InterpretingMode(Enum):
 def main():
     lexer = ForthLex().build()
     parser = ForthParser(lexer)
+
     commands = ("/parse", "/run", "/translate")
     mode = InterpretingMode.TRANSLATE
     print(f"Starting in {mode.name}.")
     print(f"Change to other interpreter modes with {', '.join(commands)}")
 
-    while True:
-        try:
-            s = input(mode.prefix)
-        except (EOFError, KeyboardInterrupt):
-            break
-        if not s:
-            continue
+    session = PromptSession()
+    with patch_stdout():
+        while True:
+            try:
+                s = session.prompt(mode.prefix)
+            except (EOFError, KeyboardInterrupt):
+                break
 
-        if s in commands:
-            mode = InterpretingMode[s[1:].upper()]
-            print(f"Mode changed to {mode.name}")
-            continue
+            if s in commands:
+                mode = InterpretingMode[s[1:].upper()]
+                print(f"Mode changed to {mode.name}")
+                continue
 
-        result: AbstractSyntaxTree = parser.parse(s)
-        if result:
-            mode.action(result)
+            result: AbstractSyntaxTree = parser.parse(s)
+            if result:
+                mode.action(result)
 
 
 if __name__ == "__main__":
