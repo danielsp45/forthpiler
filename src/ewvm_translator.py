@@ -2,9 +2,11 @@ import forth_ast
 
 
 class EWVMTranslator(forth_ast.Translator):
-    predefined_functions = {
-        ".": ["writei"]
-    }
+    def __init__(self):
+        self.predefined_functions = {
+            ".": ["writei"]
+        }
+        self.user_defined_functions = {}
 
     def visit_number(self, number: forth_ast.Number) -> list[str]:
         return [f"pushi {number.number}"]
@@ -27,13 +29,18 @@ class EWVMTranslator(forth_ast.Translator):
                 raise NotImplementedError
 
     def visit_function(self, function: forth_ast.Function) -> list[str]:
-        raise NotImplementedError
+        if function.name in self.user_defined_functions:
+            raise forth_ast.TranslationError(f"Function {function.name} already defined")
+        self.user_defined_functions[function.name] = function.ast
+        return []
 
     def visit_literal(self, literal: forth_ast.Literal) -> list[str]:
         value = literal.content
-        if value not in self.predefined_functions:
-            raise forth_ast.TranslationError(f"Literal {value} not found")
-        return self.predefined_functions[value]
+        if value in self.user_defined_functions:
+            return self.user_defined_functions[value].evaluate(self)
+        if value in self.predefined_functions:
+            return self.predefined_functions[value]
+        raise forth_ast.TranslationError(f"Literal {value} not found")
 
     def translate(self, ast: forth_ast.AbstractSyntaxTree) -> list[str]:
         return [res for expr in ast.expressions for res in expr.evaluate(self)]

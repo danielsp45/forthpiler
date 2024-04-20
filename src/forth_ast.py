@@ -115,17 +115,16 @@ class Literal(Expression):
 
 
 class Function(Expression):
-    def __init__(self, name: str, expressions: list[Expression]):
+    def __init__(self, name: str, ast: AbstractSyntaxTree):
         super().__init__()
         self.name = name
-        self.expressions = expressions
+        self.ast = ast
 
     def __repr__(self):
-        expressions_repr = ", ".join([str(expr) for expr in self.expressions])
-        return f"Function(name={self.name}, expressions={expressions_repr})"
+        return f"Function(name={self.name}, ast={self.ast})"
 
     def __eq__(self, other: Function):
-        return self.name == other.name and self.expressions == other.expressions
+        return self.name == other.name and self.ast == other.ast
 
     def evaluate(self, translator: Translator):
         return translator.visit_function(self)

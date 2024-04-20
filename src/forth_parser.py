@@ -62,7 +62,7 @@ class ForthParser:
                 p[0] = forth_ast.Operator(forth_ast.OperatorType.SLASH_MOD)
 
     def p_function(self, p):
-        """function : COLON LITERAL grammar SEMICOLON"""
+        """function : COLON LITERAL ast SEMICOLON"""
         p[0] = forth_ast.Function(p[2], p[3])
 
     def p_error(self, p):
