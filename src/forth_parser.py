@@ -10,28 +10,32 @@ class ForthParser:
         self.parser = yacc.yacc(module=self)
 
     def p_ast(self, p):
-        "ast : grammar"
+        """ast : grammar"""
         p[0] = forth_ast.AbstractSyntaxTree(p[1])
 
     def p_grammar_empty(self, p):
-        "grammar :"
+        """grammar :"""
         p[0] = []
 
     def p_grammar_expression(self, p):
-        "grammar : expression grammar"
+        """grammar : expression grammar"""
         p[0] = [p[1]] + p[2]
 
     def p_expression_number(self, p):
-        "expression : NUMBER"
+        """expression : NUMBER"""
         p[0] = forth_ast.Number(p[1])
 
     def p_expression_operator(self, p):
-        "expression : operator"
+        """expression : operator"""
         p[0] = p[1]
 
     def p_expression_function(self, p):
-        "expression : function"
+        """expression : function"""
         p[0] = p[1]
+
+    def p_expression_literal(self, p):
+        """expression : LITERAL"""
+        p[0] = forth_ast.Literal(p[1])
 
     def p_operator(self, p):
         """operator : PLUS

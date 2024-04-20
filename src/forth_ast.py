@@ -18,8 +18,16 @@ class Translator(ABC):
         pass
 
     @abstractmethod
+    def visit_literal(self, literal: Literal) -> list[str]:
+        pass
+
+    @abstractmethod
     def translate(self, ast: AbstractSyntaxTree) -> list[str]:
         pass
+
+
+class TranslationError(Exception):
+    pass
 
 
 class Expression(ABC):
@@ -86,6 +94,24 @@ class Operator(Expression):
     @override
     def evaluate(self, translator: Translator):
         return translator.visit_operator(self)
+
+
+class Literal(Expression):
+    def __init__(self, content: str):
+        super().__init__()
+        self.content = content
+
+    @override
+    def __repr__(self):
+        return f"Literal({self.content})"
+
+    @override
+    def __eq__(self, other):
+        return self.content == other.content
+
+    @override
+    def evaluate(self, translator: Translator):
+        return translator.visit_literal(self)
 
 
 class Function(Expression):
