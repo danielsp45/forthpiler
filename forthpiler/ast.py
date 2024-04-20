@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from enum import Enum
 
-from typing_extensions import override
+from typing import override
 
 
 class Translator(ABC):
