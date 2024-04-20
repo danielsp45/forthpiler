@@ -1,6 +1,7 @@
-from src.forth_ast import AbstractSyntaxTree
-from src.forth_lexer import ForthLex
-from src.forth_parser import ForthParser
+from forth_ast import AbstractSyntaxTree, Translator
+from forth_lexer import ForthLex
+from forth_parser import ForthParser
+from ewvm_translator import EWVMTranslator
 
 
 def main():
@@ -16,8 +17,9 @@ def main():
             continue
 
         result: AbstractSyntaxTree = parser.parse(s)
+        translator: Translator = EWVMTranslator()
         if result:
-            print(result.evaluate())
+            print('\n'.join(result.evaluate(translator)))
 
 
 if __name__ == "__main__":

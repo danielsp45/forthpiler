@@ -1,6 +1,21 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import override
+
+
+class Translator(ABC):
+    @abstractmethod
+    def visit_number(self, number: Number) -> list[str]:
+        pass
+
+    @abstractmethod
+    def visit_operator(self, operator: Operator) -> list[str]:
+        pass
+
+    @abstractmethod
+    def translate(self, ast: AbstractSyntaxTree) -> list[str]:
+        pass
 
 
 class Expression(ABC):
@@ -16,7 +31,7 @@ class Expression(ABC):
         pass
 
     @abstractmethod
-    def evaluate(self):
+    def evaluate(self, translator: Translator):
         pass
 
 
@@ -34,8 +49,8 @@ class Number(Expression):
         return self.number == other.number
 
     @override
-    def evaluate(self):
-        return f"pushi {self.number}"
+    def evaluate(self, translator: Translator):
+        return translator.visit_number(self)
 
 
 class OperatorType(Enum):
@@ -46,6 +61,9 @@ class OperatorType(Enum):
     EXP = 5
     MOD = 6
     SLASH_MOD = 7
+
+    def __eq__(self, other):
+        return self.value == other.value
 
 
 class Operator(Expression):
@@ -62,22 +80,8 @@ class Operator(Expression):
         return self.operator_type == other.operator_type
 
     @override
-    def evaluate(self):
-        match self.operator_type:
-            case OperatorType.PLUS:
-                return "add"
-            case OperatorType.MINUS:
-                return "sub"
-            case OperatorType.TIMES:
-                return "mul"
-            case OperatorType.DIVIDE:
-                return "div"
-            case OperatorType.EXP:
-                raise NotImplementedError
-            case OperatorType.MOD:
-                return "mod"
-            case OperatorType.SLASH_MOD:
-                raise NotImplementedError
+    def evaluate(self, translator: Translator):
+        return translator.visit_operator(self)
 
 
 class AbstractSyntaxTree:
@@ -91,5 +95,5 @@ class AbstractSyntaxTree:
     def __eq__(self, other):
         return self.expressions == other.expressions
 
-    def evaluate(self):
-        return "\n".join([expr.evaluate() for expr in self.expressions])
+    def evaluate(self, translator: Translator):
+        return translator.translate(self)

@@ -1,6 +1,6 @@
 import ply.yacc as yacc
 
-from src.forth_ast import AbstractSyntaxTree, Number, Operator, OperatorType
+import forth_ast
 
 
 class ForthParser:
@@ -11,7 +11,7 @@ class ForthParser:
 
     def p_ast(self, p):
         "ast : grammar"
-        p[0] = AbstractSyntaxTree(p[1])
+        p[0] = forth_ast.AbstractSyntaxTree(p[1])
 
     def p_grammar_empty(self, p):
         "grammar :"
@@ -23,7 +23,7 @@ class ForthParser:
 
     def p_expression_number(self, p):
         "expression : NUMBER"
-        p[0] = Number(p[1])
+        p[0] = forth_ast.Number(p[1])
 
     def p_expression_operator(self, p):
         "expression : operator"
@@ -39,19 +39,19 @@ class ForthParser:
         | SLASH_MOD"""
         match p[1]:
             case "+":
-                p[0] = Operator(OperatorType.PLUS)
+                p[0] = forth_ast.Operator(forth_ast.OperatorType.PLUS)
             case "-":
-                p[0] = Operator(OperatorType.MINUS)
+                p[0] = forth_ast.Operator(forth_ast.OperatorType.MINUS)
             case "*":
-                p[0] = Operator(OperatorType.TIMES)
+                p[0] = forth_ast.Operator(forth_ast.OperatorType.TIMES)
             case "/":
-                p[0] = Operator(OperatorType.DIVIDE)
+                p[0] = forth_ast.Operator(forth_ast.OperatorType.DIVIDE)
             case "**":
-                p[0] = Operator(OperatorType.EXP)
+                p[0] = forth_ast.Operator(forth_ast.OperatorType.EXP)
             case "MOD":
-                p[0] = Operator(OperatorType.MOD)
+                p[0] = forth_ast.Operator(forth_ast.OperatorType.MOD)
             case "/MOD":
-                p[0] = Operator(OperatorType.SLASH_MOD)
+                p[0] = forth_ast.Operator(forth_ast.OperatorType.SLASH_MOD)
 
     def p_error(self, p):
         if p:
