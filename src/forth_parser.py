@@ -29,6 +29,10 @@ class ForthParser:
         "expression : operator"
         p[0] = p[1]
 
+    def p_expression_function(self, p):
+        "expression : function"
+        p[0] = p[1]
+
     def p_operator(self, p):
         """operator : PLUS
         | MINUS
@@ -52,6 +56,10 @@ class ForthParser:
                 p[0] = forth_ast.Operator(forth_ast.OperatorType.MOD)
             case "/MOD":
                 p[0] = forth_ast.Operator(forth_ast.OperatorType.SLASH_MOD)
+
+    def p_function(self, p):
+        """function : COLON LITERAL grammar SEMICOLON"""
+        p[0] = forth_ast.Function(p[2], p[3])
 
     def p_error(self, p):
         if p:

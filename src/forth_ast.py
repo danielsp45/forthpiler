@@ -14,6 +14,10 @@ class Translator(ABC):
         pass
 
     @abstractmethod
+    def visit_function(self, function: Function) -> list[str]:
+        pass
+
+    @abstractmethod
     def translate(self, ast: AbstractSyntaxTree) -> list[str]:
         pass
 
@@ -42,7 +46,7 @@ class Number(Expression):
 
     @override
     def __repr__(self):
-        return str(self.number)
+        return f"Number({self.number})"
 
     @override
     def __eq__(self, other):
@@ -73,7 +77,7 @@ class Operator(Expression):
 
     @override
     def __repr__(self):
-        return str(self.operator_type)
+        return f"Operator({self.operator_type})"
 
     @override
     def __eq__(self, other):
@@ -82,6 +86,23 @@ class Operator(Expression):
     @override
     def evaluate(self, translator: Translator):
         return translator.visit_operator(self)
+
+
+class Function(Expression):
+    def __init__(self, name: str, expressions: list[Expression]):
+        super().__init__()
+        self.name = name
+        self.expressions = expressions
+
+    def __repr__(self):
+        expressions_repr = ", ".join([str(expr) for expr in self.expressions])
+        return f"Function(name={self.name}, expressions={expressions_repr})"
+
+    def __eq__(self, other: Function):
+        return self.name == other.name and self.expressions == other.expressions
+
+    def evaluate(self, translator: Translator):
+        return translator.visit_function(self)
 
 
 class AbstractSyntaxTree:

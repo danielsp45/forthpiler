@@ -22,5 +22,8 @@ class EWVMTranslator(forth_ast.Translator):
             case forth_ast.OperatorType.SLASH_MOD:
                 raise NotImplementedError
 
+    def visit_function(self, function: forth_ast.Function) -> list[str]:
+        raise NotImplementedError
+
     def translate(self, ast: forth_ast.AbstractSyntaxTree) -> list[str]:
         return [res for expr in ast.expressions for res in expr.evaluate(self)]
