@@ -41,7 +41,7 @@ class ForthLex(object):
 
     def t_PRINT_STRING(self, t):
         r"\.\"\s.*\" "
-        t.value = t.value[3:-1]
+        t.value = t.value[3:-2]
         return t
 
     # This MOD needs to be here because of conflicts with LITERAL.
