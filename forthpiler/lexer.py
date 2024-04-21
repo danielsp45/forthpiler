@@ -52,7 +52,7 @@ class ForthLex(object):
 
     # Words cannot be started by numbers in our implementation
     def t_LITERAL(self, t):
-        r"""[\.a-zA-Z][\.a-zA-Z\d]*"""
+        r"""[\.a-zA-Z][-\.a-zA-Z\d]*"""
         return t
 
     def t_newline(self, t):
