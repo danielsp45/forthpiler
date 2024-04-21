@@ -40,5 +40,8 @@ class EWVMTranslator(ast.Translator):
             return self.predefined_functions[value]
         raise ast.TranslationError(f"Literal {value} not found")
 
+    def visit_print_string(self, print_string: ast.PrintString) -> list[str]:
+        return [f'pushs "{print_string.content}"\nwrites']
+
     def translate(self, ast: ast.AbstractSyntaxTree) -> list[str]:
         return [res for expr in ast.expressions for res in expr.evaluate(self)]

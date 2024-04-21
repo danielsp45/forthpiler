@@ -23,6 +23,10 @@ class Translator(ABC):
         pass
 
     @abstractmethod
+    def visit_print_string(self, print_string: PrintString) -> list[str]:
+        pass
+
+    @abstractmethod
     def translate(self, ast: AbstractSyntaxTree) -> list[str]:
         pass
 
@@ -129,6 +133,21 @@ class Function(Expression):
 
     def evaluate(self, translator: Translator):
         return translator.visit_function(self)
+
+
+class PrintString(Expression):
+    def __init__(self, content: str):
+        super().__init__()
+        self.content = content
+
+    def __repr__(self):
+        return f"PrintString('{self.content}')"
+
+    def __eq__(self, other):
+        return self.content == other.content
+
+    def evaluate(self, translator: Translator):
+        return translator.visit_print_string(self)
 
 
 class AbstractSyntaxTree:

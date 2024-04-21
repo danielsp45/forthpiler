@@ -17,6 +17,7 @@ class ForthLex(object):
         "COLON",
         "SEMICOLON",
         "LITERAL",
+        "PRINT_STRING",
     )
 
     t_PLUS = r"\+"
@@ -36,6 +37,11 @@ class ForthLex(object):
     def t_NUMBER(self, t):
         r"[+-]?\d+"
         t.value = int(t.value)
+        return t
+
+    def t_PRINT_STRING(self, t):
+        r"\.\"\s.*\" "
+        t.value = t.value[3:-1]
         return t
 
     # This MOD needs to be here because of conflicts with LITERAL.

@@ -37,6 +37,10 @@ class ForthParser:
         """expression : LITERAL"""
         p[0] = ast.Literal(p[1])
 
+    def p_expression_print_string(self, p):
+        """expression : PRINT_STRING"""
+        p[0] = ast.PrintString(p[1])
+
     def p_operator(self, p):
         """operator : PLUS
         | MINUS
