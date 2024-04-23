@@ -3,7 +3,7 @@ import forthpiler.syntax as ast
 
 class EWVMTranslator(ast.Translator):
     def __init__(self):
-        self.predefined_functions = {".": ["writei"]}
+        self.predefined_functions = {".": ["writei"], "emit": ["writechr"]}
         self.user_defined_functions = {}
 
     def visit_number(self, number: ast.Number) -> list[str]:
