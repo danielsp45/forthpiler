@@ -18,6 +18,7 @@ class ForthLex(object):
         "SEMICOLON",
         "LITERAL",
         "PRINT_STRING",
+        "CHAR_FUNC",
     )
 
     t_PLUS = r"\+"
@@ -48,6 +49,11 @@ class ForthLex(object):
     # Check https://stackoverflow.com/questions/2910338/python-yacc-lexer-token-priority
     def t_MOD(self, t):
         r"""MOD"""
+        return t
+
+    def t_CHAR_FUNC(self, t):
+        r"""[cC][hH][aA][rR]\s."""
+        t.value = t.value[-1]
         return t
 
     # Words cannot be started by numbers in our implementation

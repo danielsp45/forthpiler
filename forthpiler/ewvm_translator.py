@@ -43,5 +43,8 @@ class EWVMTranslator(ast.Translator):
     def visit_print_string(self, print_string: ast.PrintString) -> list[str]:
         return [f'pushs "{print_string.content}"\nwrites']
 
+    def visit_char_function(self, char_function: ast.CharFunction) -> list[str]:
+        return [f'pushs "{char_function.content}"\nchrcode']
+
     def translate(self, ast: ast.AbstractSyntaxTree) -> list[str]:
         return [res for expr in ast.expressions for res in expr.evaluate(self)]

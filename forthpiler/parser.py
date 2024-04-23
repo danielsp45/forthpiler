@@ -41,6 +41,10 @@ class ForthParser:
         """expression : PRINT_STRING"""
         p[0] = ast.PrintString(p[1])
 
+    def p_expression_char_function(self, p):
+        """expression : CHAR_FUNC"""
+        p[0] = ast.CharFunction(p[1])
+
     def p_operator_plus(self, p):
         """operator : PLUS"""
         p[0] = ast.Operator(ast.OperatorType.PLUS)
