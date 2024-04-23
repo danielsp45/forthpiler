@@ -41,29 +41,33 @@ class ForthParser:
         """expression : PRINT_STRING"""
         p[0] = ast.PrintString(p[1])
 
-    def p_operator(self, p):
-        """operator : PLUS
-        | MINUS
-        | TIMES
-        | DIVIDE
-        | EXP
-        | MOD
-        | SLASH_MOD"""
-        match p[1]:
-            case "+":
-                p[0] = ast.Operator(ast.OperatorType.PLUS)
-            case "-":
-                p[0] = ast.Operator(ast.OperatorType.MINUS)
-            case "*":
-                p[0] = ast.Operator(ast.OperatorType.TIMES)
-            case "/":
-                p[0] = ast.Operator(ast.OperatorType.DIVIDE)
-            case "**":
-                p[0] = ast.Operator(ast.OperatorType.EXP)
-            case "MOD":
-                p[0] = ast.Operator(ast.OperatorType.MOD)
-            case "/MOD":
-                p[0] = ast.Operator(ast.OperatorType.SLASH_MOD)
+    def p_operator_plus(self, p):
+        """operator : PLUS"""
+        p[0] = ast.Operator(ast.OperatorType.PLUS)
+
+    def p_operator_minus(self, p):
+        """operator : MINUS"""
+        p[0] = ast.Operator(ast.OperatorType.MINUS)
+
+    def p_operator_times(self, p):
+        """operator : TIMES"""
+        p[0] = ast.Operator(ast.OperatorType.TIMES)
+
+    def p_operator_divide(self, p):
+        """operator : DIVIDE"""
+        p[0] = ast.Operator(ast.OperatorType.DIVIDE)
+
+    def p_operator_exp(self, p):
+        """operator : EXP"""
+        p[0] = ast.Operator(ast.OperatorType.EXP)
+
+    def p_operator_mod(self, p):
+        """operator : MOD"""
+        p[0] = ast.Operator(ast.OperatorType.MOD)
+
+    def p_operator_slash_mod(self, p):
+        """operator : SLASH_MOD"""
+        p[0] = ast.Operator(ast.OperatorType.SLASH_MOD)
 
     def p_function(self, p):
         """function : COLON LITERAL ast SEMICOLON"""
