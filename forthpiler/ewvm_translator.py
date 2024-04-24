@@ -1,9 +1,17 @@
+from typing import Dict, List
+
 import forthpiler.syntax as ast
 
 
 class EWVMTranslator(ast.Translator):
     def __init__(self):
-        self.predefined_functions = {".": ["writei"], "emit": ["writechr"]}
+        self.predefined_functions: Dict[str, List[str]] = {
+            ".": ["writei"],
+            "emit": ["writechr"],
+            "space": ["pushi 32", "writechr"],  # 32 is ASCII code for space
+            "cr": ["pushi 10", "writechr"],  # 10 is ASCII code for newline
+        }
+
         self.user_defined_functions = {}
 
     def visit_number(self, number: ast.Number) -> list[str]:
