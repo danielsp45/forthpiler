@@ -32,7 +32,7 @@ class ForthLex(object):
 
     # Ignore comments anywhere
     def t_comment(self, t):
-        r"\(.*\)"
+        r"""\\.*|(\(.*\))"""
         pass
 
     def t_NUMBER(self, t):
