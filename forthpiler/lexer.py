@@ -109,6 +109,7 @@ class ForthLex(object):
         r"""[\.a-zA-Z\d\?][-\.a-zA-Z\d]*"""
         if t.value.isdigit():
             t.type = "NUMBER"
+            t.value = int(t.value)
             return t
 
         t.type = self.reserved.get(t.value.lower(), "LITERAL")
