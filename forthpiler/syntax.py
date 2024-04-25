@@ -2,46 +2,46 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import override
+from typing import List, override
 
 
 class Translator(ABC):
     @abstractmethod
-    def visit_number(self, number: Number) -> list[str]:
+    def visit_number(self, number: Number) -> List[str]:
         pass
 
     @abstractmethod
-    def visit_operator(self, operator: Operator) -> list[str]:
+    def visit_operator(self, operator: Operator) -> List[str]:
         pass
 
     @abstractmethod
     def visit_comparison_operator(
         self, comparison_operator: ComparisonOperator
-    ) -> list[str]:
+    ) -> List[str]:
         pass
 
     @abstractmethod
-    def visit_function(self, function: Function) -> list[str]:
+    def visit_function(self, function: Function) -> List[str]:
         pass
 
     @abstractmethod
-    def visit_if_statement(self, if_statement: IfStatement) -> list[str]:
+    def visit_if_statement(self, if_statement: IfStatement) -> List[str]:
         pass
 
     @abstractmethod
-    def visit_literal(self, literal: Literal) -> list[str]:
+    def visit_literal(self, literal: Literal) -> List[str]:
         pass
 
     @abstractmethod
-    def visit_print_string(self, print_string: PrintString) -> list[str]:
+    def visit_print_string(self, print_string: PrintString) -> List[str]:
         pass
 
     @abstractmethod
-    def visit_char_function(self, char_function: CharFunction) -> list[str]:
+    def visit_char_function(self, char_function: CharFunction) -> List[str]:
         pass
 
     @abstractmethod
-    def translate(self, ast: AbstractSyntaxTree) -> list[str]:
+    def translate(self, ast: AbstractSyntaxTree) -> List[str]:
         pass
 
 
@@ -137,12 +137,15 @@ class ComparisonOperator(Expression):
         super().__init__()
         self.comparison_operator_type = comparison_operator_type
 
+    @override
     def __repr__(self):
         return f"ComparisonOperator({self.comparison_operator_type})"
 
+    @override
     def __eq__(self, other):
         return self.comparison_operator_type == other.comparison_operator_type
 
+    @override
     def evaluate(self, translator: Translator):
         return translator.visit_comparison_operator(self)
 
@@ -171,12 +174,15 @@ class Function(Expression):
         self.name = name.lower()
         self.ast = ast
 
+    @override
     def __repr__(self):
         return f"Function(name={self.name}, ast={self.ast})"
 
+    @override
     def __eq__(self, other: Function):
         return self.name == other.name and self.ast == other.ast
 
+    @override
     def evaluate(self, translator: Translator):
         return translator.visit_function(self)
 
@@ -195,9 +201,11 @@ class IfStatement(Expression):
 
         self.with_else = if_false is not None
 
+    @override
     def __repr__(self):
         return f"IfStatement(if_true={self.if_true}, if_false={self.if_false}, always={self.always})"
 
+    @override
     def __eq__(self, other):
         return (
             self.if_true == other.if_true
@@ -205,6 +213,7 @@ class IfStatement(Expression):
             and self.always == other.always
         )
 
+    @override
     def evaluate(self, translator: Translator):
         return translator.visit_if_statement(self)
 
@@ -214,12 +223,15 @@ class PrintString(Expression):
         super().__init__()
         self.content = content
 
+    @override
     def __repr__(self):
         return f"PrintString('{self.content}')"
 
+    @override
     def __eq__(self, other):
         return self.content == other.content
 
+    @override
     def evaluate(self, translator: Translator):
         return translator.visit_print_string(self)
 
@@ -229,18 +241,21 @@ class CharFunction(Expression):
         super().__init__()
         self.content = content
 
+    @override
     def __repr__(self):
         return f"CharFunction('{self.content}')"
 
+    @override
     def __eq__(self, other):
         return self.content == other.content
 
+    @override
     def evaluate(self, translator: Translator):
         return translator.visit_char_function(self)
 
 
 class AbstractSyntaxTree:
-    def __init__(self, expressions: list[Expression]):
+    def __init__(self, expressions: List[Expression]):
         self.expressions = expressions
 
     def __repr__(self):
