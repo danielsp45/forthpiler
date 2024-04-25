@@ -16,8 +16,6 @@ class EWVMTranslator(ast.Translator):
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
 
-        self.if_counter = 1  # Counter for if statements
-
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
 
@@ -73,36 +71,32 @@ class EWVMTranslator(ast.Translator):
         return []
 
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
-        result: List[str] = []
         if if_statement.with_else:
-            result = self._visit_if_statement_with_else(if_statement)
+            return self._visit_if_statement_with_else(if_statement)
         else:
-            result = self._visit_if_statement_without_else(if_statement)
-
-        self.if_counter += 1
-        return result
+            return self._visit_if_statement_without_else(if_statement)
 
     def _visit_if_statement_with_else(self, if_statement: ast.IfStatement) -> List[str]:
         return [
-            f"jz else{self.if_counter}",
+            f"jz else{if_statement.counter}",
             *if_statement.if_true.evaluate(self),
-            f"jump endif{self.if_counter}",
-            f"else{self.if_counter}:",
+            f"jump endif{if_statement.counter}",
+            f"else{if_statement.counter}:",
             *if_statement.if_false.evaluate(self),
-            f"endif{self.if_counter}:",
+            f"endif{if_statement.counter}:",
         ]
 
     def _visit_if_statement_without_else(
         self, if_statement: ast.IfStatement
     ) -> List[str]:
         return [
-            f"jz endif{self.if_counter}",
+            f"jz endif{if_statement.counter}",
             *if_statement.if_true.evaluate(self),
-            f"endif{self.if_counter}:",
+            f"endif{if_statement.counter}:",
         ]
 
     def visit_literal(self, literal: ast.Literal) -> List[str]:
-        value = literal.content
+        value = literal.content.lower()
 
         if value in self.user_defined_functions:
             return self.user_defined_functions[value].evaluate(self)
