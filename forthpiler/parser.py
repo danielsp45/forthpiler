@@ -29,8 +29,16 @@ class ForthParser:
         """expression : operator"""
         p[0] = p[1]
 
+    def p_expression_comparison_operator(self, p):
+        """expression : comparison_operator"""
+        p[0] = p[1]
+
     def p_expression_function(self, p):
         """expression : function"""
+        p[0] = p[1]
+
+    def p_expression_if_statement(self, p):
+        """expression : if_statement"""
         p[0] = p[1]
 
     def p_expression_literal(self, p):
@@ -73,9 +81,67 @@ class ForthParser:
         """operator : SLASH_MOD"""
         p[0] = ast.Operator(ast.OperatorType.SLASH_MOD)
 
+    def p_comparison_operator_equals(self, p):
+        """comparison_operator : EQUALS"""
+        p[0] = ast.ComparisonOperator(ast.ComparisonOperatorType.EQUALS)
+
+    def p_comparison_operator_not_equals(self, p):
+        """comparison_operator : NOT_EQUALS"""
+        p[0] = ast.ComparisonOperator(ast.ComparisonOperatorType.NOT_EQUALS)
+
+    def p_comparison_operator_less_than(self, p):
+        """comparison_operator : LESS_THAN"""
+        p[0] = ast.ComparisonOperator(ast.ComparisonOperatorType.LESS_THAN)
+
+    def p_comparison_operator_less_than_or_equal_to(self, p):
+        """comparison_operator : LESS_THAN_OR_EQUAL_TO"""
+        p[0] = ast.ComparisonOperator(ast.ComparisonOperatorType.LESS_THAN_OR_EQUAL_TO)
+
+    def p_comparison_operator_greater_than(self, p):
+        """comparison_operator : GREATER_THAN"""
+        p[0] = ast.ComparisonOperator(ast.ComparisonOperatorType.GREATER_THAN)
+
+    def p_comparison_operator_greater_than_or_equal_to(self, p):
+        """comparison_operator : GREATER_THAN_OR_EQUAL_TO"""
+        p[0] = ast.ComparisonOperator(
+            ast.ComparisonOperatorType.GREATER_THAN_OR_EQUAL_TO
+        )
+
+    def p_comparison_operator_zero_equals(self, p):
+        """comparison_operator : ZERO_EQUALS"""
+        p[0] = ast.ComparisonOperator(ast.ComparisonOperatorType.ZERO_EQUALS)
+
+    def p_comparison_operator_zero_less_than(self, p):
+        """comparison_operator : ZERO_LESS_THAN"""
+        p[0] = ast.ComparisonOperator(ast.ComparisonOperatorType.ZERO_LESS_THAN)
+
+    def p_comparison_operator_zero_less_than_or_equal_to(self, p):
+        """comparison_operator : ZERO_LESS_THAN_OR_EQUAL_TO"""
+        p[0] = ast.ComparisonOperator(
+            ast.ComparisonOperatorType.ZERO_LESS_THAN_OR_EQUAL_TO
+        )
+
+    def p_comparison_operator_zero_greater_than(self, p):
+        """comparison_operator : ZERO_GREATER_THAN"""
+        p[0] = ast.ComparisonOperator(ast.ComparisonOperatorType.ZERO_GREATER_THAN)
+
+    def p_comparison_operator_zero_greater_than_or_equal_to(self, p):
+        """comparison_operator : ZERO_GREATER_THAN_OR_EQUAL_TO"""
+        p[0] = ast.ComparisonOperator(
+            ast.ComparisonOperatorType.ZERO_GREATER_THAN_OR_EQUAL_TO
+        )
+
     def p_function(self, p):
-        """function : COLON LITERAL ast SEMICOLON"""
+        """function : COLON LITERAL ast SEMI_COLON"""
         p[0] = ast.Function(p[2], p[3])
+
+    def p_if_statement_without_else(self, p):
+        """if_statement : IF ast THEN ast"""
+        p[0] = ast.IfStatement(p[2], None, p[4])
+
+    def p_if_statement_with_else(self, p):
+        """if_statement : IF ast ELSE ast THEN ast"""
+        p[0] = ast.IfStatement(p[2], p[4], p[6])
 
     def p_error(self, p):
         if p:

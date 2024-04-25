@@ -1,0 +1,33 @@
+grammar : expression grammar
+        |
+
+expression : NUMBER
+           | operator
+           | comparison_operator
+           | function
+           | if_statement
+           | LITERAL
+           | PRINT_STRING
+           | CHAR_FUNC
+
+operator : PLUS
+         | MINUS
+         | TIMES
+         | DIVIDE
+         | EXP
+         | MOD
+         | SLASH_MOD
+
+comparison_operator : EQUALS
+                    | NOT_EQUALS
+                    | LESS_THAN
+                    | LESS_THAN_OR_EQUAL_TO
+                    | GREATER_THAN
+                    | GREATER_THAN_OR_EQUAL_TO
+                    | ZERO_EQUALS
+                    | ZERO_LESS_THAN
+                    | ZERO_LESS_THAN_OR_EQUAL_TO
+                    | ZERO_GREATER_THAN
+                    | ZERO_GREATER_THAN_OR_EQUAL_TO
+
+function : COLON LITERAL grammar SEMI_COLON

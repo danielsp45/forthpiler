@@ -2,6 +2,8 @@ from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
 from forthpiler.syntax import (
     AbstractSyntaxTree,
+    ComparisonOperator,
+    ComparisonOperatorType,
     Function,
     Literal,
     Number,
@@ -79,5 +81,42 @@ def test_function():
                 AbstractSyntaxTree([Number(3), Number(4), Operator(OperatorType.PLUS)]),
             ),
             Literal("add"),
+        ]
+    )
+
+
+def test_comparison_operators():
+    code = """1 2 = 3 <> 4 < 5 0<= 5 <= 6 > 7 >= 8 0 = 9 0< 10 0> <= 11 0 > 12 0 >="""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Number(1),
+            Number(2),
+            ComparisonOperator(ComparisonOperatorType.EQUALS),
+            Number(3),
+            ComparisonOperator(ComparisonOperatorType.NOT_EQUALS),
+            Number(4),
+            ComparisonOperator(ComparisonOperatorType.LESS_THAN),
+            Number(5),
+            ComparisonOperator(ComparisonOperatorType.ZERO_LESS_THAN_OR_EQUAL_TO),
+            Number(5),
+            ComparisonOperator(ComparisonOperatorType.LESS_THAN_OR_EQUAL_TO),
+            Number(6),
+            ComparisonOperator(ComparisonOperatorType.GREATER_THAN),
+            Number(7),
+            ComparisonOperator(ComparisonOperatorType.GREATER_THAN_OR_EQUAL_TO),
+            Number(8),
+            Number(0),
+            ComparisonOperator(ComparisonOperatorType.EQUALS),
+            Number(9),
+            ComparisonOperator(ComparisonOperatorType.ZERO_LESS_THAN),
+            Number(10),
+            ComparisonOperator(ComparisonOperatorType.ZERO_GREATER_THAN),
+            ComparisonOperator(ComparisonOperatorType.LESS_THAN_OR_EQUAL_TO),
+            Number(11),
+            Number(0),
+            ComparisonOperator(ComparisonOperatorType.GREATER_THAN),
+            Number(12),
+            Number(0),
+            ComparisonOperator(ComparisonOperatorType.GREATER_THAN_OR_EQUAL_TO),
         ]
     )
