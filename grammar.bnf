@@ -31,3 +31,6 @@ comparison_operator : EQUALS
                     | ZERO_GREATER_THAN_OR_EQUAL_TO
 
 function : COLON LITERAL grammar SEMI_COLON
+
+if_statement: IF grammar THEN grammar
+            | IF grammar ELSE grammar THEN grammar
