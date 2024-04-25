@@ -4,16 +4,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import override
 
-# FIXME: This should be inside the translator module?
-IF_COUNTER: int = 1
-
-
-def next_if_counter() -> int:
-    global IF_COUNTER
-    current = IF_COUNTER
-    IF_COUNTER += 1
-    return current
-
 
 class Translator(ABC):
     @abstractmethod
@@ -203,7 +193,6 @@ class IfStatement(Expression):
         self.if_false = if_false
         self.always = always
 
-        self.counter = next_if_counter()
         self.with_else = if_false is not None
 
     def __repr__(self):
