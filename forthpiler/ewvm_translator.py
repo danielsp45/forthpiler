@@ -15,6 +15,7 @@ class EWVMTranslator(ast.Translator):
             "2dup": ["pushsp", "load -1"] * 2,
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
+        self.if_counter = 0
 
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
@@ -77,22 +78,28 @@ class EWVMTranslator(ast.Translator):
             return self._visit_if_statement_without_else(if_statement)
 
     def _visit_if_statement_with_else(self, if_statement: ast.IfStatement) -> List[str]:
+        current_if_counter = self.if_counter
+        self.if_counter += 1
+
         return [
-            f"jz else{if_statement.counter}",
+            f"jz else{current_if_counter}",
             *if_statement.if_true.evaluate(self),
-            f"jump endif{if_statement.counter}",
-            f"else{if_statement.counter}:",
+            f"jump endif{current_if_counter}",
+            f"else{current_if_counter}:",
             *if_statement.if_false.evaluate(self),
-            f"endif{if_statement.counter}:",
+            f"endif{current_if_counter}:",
         ]
 
     def _visit_if_statement_without_else(
         self, if_statement: ast.IfStatement
     ) -> List[str]:
+        current_if_counter = self.if_counter
+        self.if_counter += 1
+
         return [
-            f"jz endif{if_statement.counter}",
+            f"jz endif{current_if_counter}",
             *if_statement.if_true.evaluate(self),
-            f"endif{if_statement.counter}:",
+            f"endif{current_if_counter}:",
         ]
 
     def visit_literal(self, literal: ast.Literal) -> List[str]:
