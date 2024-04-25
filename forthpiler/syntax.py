@@ -15,7 +15,17 @@ class Translator(ABC):
         pass
 
     @abstractmethod
+    def visit_comparison_operator(
+        self, comparison_operator: ComparisonOperator
+    ) -> list[str]:
+        pass
+
+    @abstractmethod
     def visit_function(self, function: Function) -> list[str]:
+        pass
+
+    @abstractmethod
+    def visit_if_statement(self, if_statement: IfStatement) -> list[str]:
         pass
 
     @abstractmethod
@@ -105,6 +115,38 @@ class Operator(Expression):
         return translator.visit_operator(self)
 
 
+class ComparisonOperatorType(Enum):
+    EQUALS = 1
+    NOT_EQUALS = 2
+    LESS_THAN = 3
+    LESS_THAN_OR_EQUAL_TO = 4
+    GREATER_THAN = 5
+    GREATER_THAN_OR_EQUAL_TO = 6
+    ZERO_EQUALS = 7
+    ZERO_LESS_THAN = 8
+    ZERO_LESS_THAN_OR_EQUAL_TO = 9
+    ZERO_GREATER_THAN = 10
+    ZERO_GREATER_THAN_OR_EQUAL_TO = 11
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+
+class ComparisonOperator(Expression):
+    def __init__(self, comparison_operator_type: ComparisonOperatorType):
+        super().__init__()
+        self.comparison_operator_type = comparison_operator_type
+
+    def __repr__(self):
+        return f"ComparisonOperator({self.comparison_operator_type})"
+
+    def __eq__(self, other):
+        return self.comparison_operator_type == other.comparison_operator_type
+
+    def evaluate(self, translator: Translator):
+        return translator.visit_comparison_operator(self)
+
+
 class Literal(Expression):
     def __init__(self, content: str):
         super().__init__()
@@ -137,6 +179,34 @@ class Function(Expression):
 
     def evaluate(self, translator: Translator):
         return translator.visit_function(self)
+
+
+class IfStatement(Expression):
+    def __init__(
+        self,
+        if_true: AbstractSyntaxTree,
+        if_false: AbstractSyntaxTree,
+        always: AbstractSyntaxTree,
+    ):
+        super().__init__()
+        self.if_true = if_true
+        self.if_false = if_false
+        self.always = always
+
+        self.with_else = if_false is not None
+
+    def __repr__(self):
+        return f"IfStatement(if_true={self.if_true}, if_false={self.if_false}, always={self.always})"
+
+    def __eq__(self, other):
+        return (
+            self.if_true == other.if_true
+            and self.if_false == other.if_false
+            and self.always == other.always
+        )
+
+    def evaluate(self, translator: Translator):
+        return translator.visit_if_statement(self)
 
 
 class PrintString(Expression):
