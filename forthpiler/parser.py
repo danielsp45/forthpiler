@@ -21,6 +21,10 @@ class ForthParser:
         """grammar : expression grammar"""
         p[0] = [p[1]] + p[2]
 
+    def p_expression_while_loop(self, p):
+        """expression : while_loop"""
+        p[0] = p[1]
+
     def p_expression_number(self, p):
         """expression : NUMBER"""
         p[0] = ast.Number(p[1])
@@ -134,6 +138,10 @@ class ForthParser:
     def p_function(self, p):
         """function : COLON LITERAL ast SEMI_COLON"""
         p[0] = ast.Function(p[2], p[3])
+
+    def p_while_loop(self, p):
+        """while_loop : DO ast LOOP"""
+        p[0] = ast.DoLoopStatement(p[2])
 
     def p_if_statement_without_else(self, p):
         """if_statement : IF ast THEN ast"""

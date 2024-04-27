@@ -71,6 +71,29 @@ class EWVMTranslator(ast.Translator):
         self.user_defined_functions[function.name] = function.ast
         return []
 
+    def visit_do_loop(self, do_loop: ast.DoLoopStatement) -> List[str]:
+        body = do_loop.body.evaluate(self)
+
+        return [
+            "start",
+            "pushfp",
+            "load -2",
+            "pushfp",
+            "load -1",
+            "startwhile0:",
+            "pushl 0",
+            "pushl 1",
+            "sup",
+            "jz endwhile0",
+            *body,
+            "pushl 1",
+            "pushi 1",
+            "add",
+            "storel 1",
+            "jump startwhile0",
+            "endwhile0:",
+        ]
+
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
         if if_statement.with_else:
             return self._visit_if_statement_with_else(if_statement)
