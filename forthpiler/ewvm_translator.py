@@ -16,6 +16,7 @@ class EWVMTranslator(ast.Translator):
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
         self.if_counter = 0
+        self.while_counter = 0
 
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
@@ -73,25 +74,27 @@ class EWVMTranslator(ast.Translator):
 
     def visit_do_loop(self, do_loop: ast.DoLoopStatement) -> List[str]:
         body = do_loop.body.evaluate(self)
-
+        current_while_counter = self.while_counter
+        self.while_counter += 1
+        # TODO: support the i variable
         return [
             "start",
             "pushfp",
             "load -2",
             "pushfp",
             "load -1",
-            "startwhile0:",
+            f"startwhile{current_while_counter}:",
             "pushl 0",
             "pushl 1",
             "sup",
-            "jz endwhile0",
+            f"jz endwhile{current_while_counter}",
             *body,
             "pushl 1",
             "pushi 1",
             "add",
             "storel 1",
-            "jump startwhile0",
-            "endwhile0:",
+            f"jump startwhile{current_while_counter}",
+            f"endwhile{current_while_counter}:",
         ]
 
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
