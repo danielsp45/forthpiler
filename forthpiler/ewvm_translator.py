@@ -78,23 +78,23 @@ class EWVMTranslator(ast.Translator):
         self.while_counter += 1
         # TODO: support the i variable
         return [
-            "start",
-            "pushfp",
-            "load -2",
-            "pushfp",
-            "load -1",
+            f"pusha startwhile{current_while_counter}",
+            "call",
+            f"jump loopexit{current_while_counter}",
             f"startwhile{current_while_counter}:",
-            "pushl 0",
-            "pushl 1",
+            "pushl -2",
+            "pushl -1",
             "sup",
             f"jz endwhile{current_while_counter}",
             *body,
-            "pushl 1",
+            "pushl -1",
             "pushi 1",
             "add",
-            "storel 1",
+            "storel -1",
             f"jump startwhile{current_while_counter}",
             f"endwhile{current_while_counter}:",
+            "return",
+            f"loopexit{current_while_counter}:",
         ]
 
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
