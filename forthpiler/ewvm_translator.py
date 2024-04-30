@@ -76,7 +76,11 @@ class EWVMTranslator(ast.Translator):
         current_while_counter = self.while_counter
         self.while_counter += 1
         body = do_loop.body.evaluate(self)
-        # TODO: support the i variable
+
+        for line in body:
+            if line == "i":
+                body[body.index(line)] = f"pushst {current_while_counter}\nload 1"
+
         return [
             "alloc 2",
             "swap",
@@ -143,6 +147,9 @@ class EWVMTranslator(ast.Translator):
 
         if value in self.predefined_functions:
             return self.predefined_functions[value]
+
+        if value == "i" or value == "I":
+            return ["i"]
 
         raise ast.TranslationError(f"Literal {value} not found")
 
