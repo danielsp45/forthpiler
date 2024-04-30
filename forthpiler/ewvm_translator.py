@@ -73,9 +73,9 @@ class EWVMTranslator(ast.Translator):
         return []
 
     def visit_do_loop(self, do_loop: ast.DoLoopStatement) -> List[str]:
-        body = do_loop.body.evaluate(self)
         current_while_counter = self.while_counter
         self.while_counter += 1
+        body = do_loop.body.evaluate(self)
         # TODO: support the i variable
         return [
             "alloc 2",
@@ -101,6 +101,7 @@ class EWVMTranslator(ast.Translator):
             "store 1",
             f"jump startwhile{current_while_counter}",
             f"endwhile{current_while_counter}:",
+            "popst",
         ]
 
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
