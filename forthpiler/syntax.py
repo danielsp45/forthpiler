@@ -25,7 +25,7 @@ class Translator(ABC):
         pass
 
     @abstractmethod
-    def visit_do_loop(self, do_loop: DoLoopStatement) -> List[str]:
+    def visit_do_loop_statement(self, do_loop: DoLoopStatement) -> List[str]:
         pass
 
     @abstractmethod
@@ -198,7 +198,7 @@ class DoLoopStatement(Expression):
 
     @override
     def __repr__(self):
-        return f"DoWhileLoop(body={self.body})"
+        return f"DoLoopStatement(body={self.body})"
 
     @override
     def __eq__(self, other: DoLoopStatement):
@@ -206,7 +206,7 @@ class DoLoopStatement(Expression):
 
     @override
     def evaluate(self, translator: Translator):
-        return translator.visit_do_loop(self)
+        return translator.visit_do_loop_statement(self)
 
 
 class IfStatement(Expression):

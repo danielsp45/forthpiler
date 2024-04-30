@@ -73,7 +73,7 @@ class EWVMTranslator(ast.Translator):
         self.user_defined_functions[function.name] = function.ast
         return []
 
-    def visit_do_loop(self, do_loop: ast.DoLoopStatement) -> List[str]:
+    def visit_do_loop_statement(self, do_loop: ast.DoLoopStatement) -> List[str]:
         current_while_counter = self.while_counter
         self.while_counter += 1
         body = do_loop.body.evaluate(self)
