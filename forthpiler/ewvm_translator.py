@@ -88,6 +88,7 @@ class EWVMTranslator(ast.Translator):
             f"else{current_if_counter}:",
             *if_statement.if_false.evaluate(self),
             f"endif{current_if_counter}:",
+            *if_statement.always.evaluate(self),
         ]
 
     def _visit_if_statement_without_else(
@@ -100,6 +101,7 @@ class EWVMTranslator(ast.Translator):
             f"jz endif{current_if_counter}",
             *if_statement.if_true.evaluate(self),
             f"endif{current_if_counter}:",
+            *if_statement.always.evaluate(self),
         ]
 
     def visit_literal(self, literal: ast.Literal) -> List[str]:
