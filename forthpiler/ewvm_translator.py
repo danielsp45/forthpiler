@@ -13,6 +13,7 @@ class EWVMTranslator(ast.Translator):
             "swap": ["swap"],
             "dup": ["dup 1"],
             "2dup": ["pushsp", "load -1"] * 2,
+            "i": ["i"],
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
         self.if_counter = 0
@@ -147,9 +148,6 @@ class EWVMTranslator(ast.Translator):
 
         if value in self.predefined_functions:
             return self.predefined_functions[value]
-
-        if value == "i" or value == "I":
-            return ["i"]
 
         raise ast.TranslationError(f"Literal {value} not found")
 
