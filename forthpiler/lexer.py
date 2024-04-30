@@ -9,6 +9,8 @@ class ForthLex(object):
         "if": "IF",
         "else": "ELSE",
         "then": "THEN",
+        "do": "DO",
+        "loop": "LOOP",
     }
 
     tokens = [

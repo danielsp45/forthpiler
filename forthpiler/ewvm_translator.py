@@ -13,9 +13,11 @@ class EWVMTranslator(ast.Translator):
             "swap": ["swap"],
             "dup": ["dup 1"],
             "2dup": ["pushsp", "load -1"] * 2,
+            "i": ["i"],
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
         self.if_counter = 0
+        self.while_counter = 0
 
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
@@ -70,6 +72,42 @@ class EWVMTranslator(ast.Translator):
 
         self.user_defined_functions[function.name] = function.ast
         return []
+
+    def visit_do_loop_statement(self, do_loop: ast.DoLoopStatement) -> List[str]:
+        current_while_counter = self.while_counter
+        self.while_counter += 1
+        body = do_loop.body.evaluate(self)
+
+        for line in body:
+            if line == "i":
+                body[body.index(line)] = f"pushst {current_while_counter}\nload 1"
+
+        return [
+            "alloc 2",
+            "swap",
+            "store 1",
+            f"pushst {current_while_counter}",
+            "swap",
+            "store 0",
+            f"startwhile{current_while_counter}:",
+            f"pushst {current_while_counter}",
+            "load 0",
+            f"pushst {current_while_counter}",
+            "load 1",
+            "sup",
+            f"jz endwhile{current_while_counter}",
+            *body,
+            f"pushst {current_while_counter}",
+            "load 1",
+            "pushi 1",
+            "add",
+            f"pushst {current_while_counter}",
+            "swap",
+            "store 1",
+            f"jump startwhile{current_while_counter}",
+            f"endwhile{current_while_counter}:",
+            "popst",
+        ]
 
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
         if if_statement.with_else:
