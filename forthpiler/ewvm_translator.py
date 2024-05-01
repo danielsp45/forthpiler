@@ -121,9 +121,13 @@ class EWVMTranslator(ast.Translator):
                 body[body.index(line)] = f"pushst {current_while_counter}\nload 1"
 
         return [
-            "alloc 2",
+            "dup 1",
+            "alloc 3",
             "swap",
             "store 1",
+            f"pushst {current_while_counter}",
+            "swap",
+            "store 2",
             f"pushst {current_while_counter}",
             "swap",
             "store 0",
@@ -131,7 +135,8 @@ class EWVMTranslator(ast.Translator):
             f"pushst {current_while_counter}",
             "load 0",
             "dup 1",
-            "pushi 0",
+            f"pushst {current_while_counter}",
+            "load 2",
             "sup",
             f"jz ifreverseloop{current_while_counter}",
             f"pushst {current_while_counter}",
