@@ -9,6 +9,9 @@ class ForthLex(object):
         "if": "IF",
         "else": "ELSE",
         "then": "THEN",
+        "do": "DO",
+        "loop": "LOOP",
+        "+loop": "PLUS_LOOP",
     }
 
     tokens = [
@@ -36,9 +39,6 @@ class ForthLex(object):
         "LITERAL",
         "PRINT_STRING",
         "CHAR_FUNC",
-        "DO",
-        "LOOP",
-        "PLUS_LOOP",
     ] + list(reserved.values())
 
     # Literals are not defined with the built-in `literals` definition
@@ -108,16 +108,11 @@ class ForthLex(object):
         t.value = t.value[-1]
         return t
 
-    def t_DO(self, t):
-        r"""DO"""
-        return t
-
-    def t_LOOP(self, t):
-        r"""LOOP"""
-        return t
-
+    # This is defined as a single rule, in order to avoid conflicts
+    # with the operator PLUS
     def t_PLUS_LOOP(self, t):
-        r"""\+LOOP"""
+        r"\+[lL][oO][oO][pP]"
+        t.type = self.reserved.get(t.value.lower(), "PLUS_LOOP")
         return t
 
     def t_LITERAL(self, t):

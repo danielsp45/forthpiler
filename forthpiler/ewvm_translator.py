@@ -13,6 +13,7 @@ class EWVMTranslator(ast.Translator):
             "swap": ["swap"],
             "dup": ["dup 1"],
             "2dup": ["pushsp", "load -1"] * 2,
+            "drop": ["pop 1"],
             "i": ["i"],
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
