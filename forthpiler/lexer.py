@@ -9,8 +9,6 @@ class ForthLex(object):
         "if": "IF",
         "else": "ELSE",
         "then": "THEN",
-        "do": "DO",
-        "loop": "LOOP",
     }
 
     tokens = [
@@ -38,6 +36,9 @@ class ForthLex(object):
         "LITERAL",
         "PRINT_STRING",
         "CHAR_FUNC",
+        "DO",
+        "LOOP",
+        "PLUS_LOOP",
     ] + list(reserved.values())
 
     # Literals are not defined with the built-in `literals` definition
@@ -105,6 +106,18 @@ class ForthLex(object):
     def t_CHAR_FUNC(self, t):
         r"""[cC][hH][aA][rR]\s."""
         t.value = t.value[-1]
+        return t
+
+    def t_DO(self, t):
+        r"""DO"""
+        return t
+
+    def t_LOOP(self, t):
+        r"""LOOP"""
+        return t
+
+    def t_PLUS_LOOP(self, t):
+        r"""\+LOOP"""
         return t
 
     def t_LITERAL(self, t):

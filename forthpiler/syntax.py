@@ -29,6 +29,12 @@ class Translator(ABC):
         pass
 
     @abstractmethod
+    def visit_do_plus_loop_statement(
+        self, do_plus_loop: DoPlusLoopStatement
+    ) -> List[str]:
+        pass
+
+    @abstractmethod
     def visit_if_statement(self, if_statement: IfStatement) -> List[str]:
         pass
 
@@ -207,6 +213,24 @@ class DoLoopStatement(Expression):
     @override
     def evaluate(self, translator: Translator):
         return translator.visit_do_loop_statement(self)
+
+
+class DoPlusLoopStatement(Expression):
+    def __init__(self, ast: AbstractSyntaxTree):
+        super().__init__()
+        self.body = ast
+
+    @override
+    def __repr__(self):
+        return f"DoPlusLoopStatement(body={self.body})"
+
+    @override
+    def __eq__(self, other: DoPlusLoopStatement):
+        return self.body == other.body
+
+    @override
+    def evaluate(self, translator: Translator):
+        return translator.visit_do_plus_loop_statement(self)
 
 
 class IfStatement(Expression):

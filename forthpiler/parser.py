@@ -22,7 +22,8 @@ class ForthParser:
         p[0] = [p[1]] + p[2]
 
     def p_expression_while_loop(self, p):
-        """expression : while_loop"""
+        """expression : while_loop
+        | while_plus_loop"""
         p[0] = p[1]
 
     def p_expression_number(self, p):
@@ -142,6 +143,10 @@ class ForthParser:
     def p_while_loop(self, p):
         """while_loop : DO ast LOOP"""
         p[0] = ast.DoLoopStatement(p[2])
+
+    def p_while_plus_loop(self, p):
+        """while_plus_loop : DO ast PLUS_LOOP"""
+        p[0] = ast.DoPlusLoopStatement(p[2])
 
     def p_if_statement_without_else(self, p):
         """if_statement : IF ast THEN ast"""

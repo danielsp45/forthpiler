@@ -109,6 +109,53 @@ class EWVMTranslator(ast.Translator):
             "popst",
         ]
 
+    def visit_do_plus_loop_statement(
+        self, do_loop: ast.DoPlusLoopStatement
+    ) -> List[str]:
+        current_while_counter = self.while_counter
+        self.while_counter += 1
+        body = do_loop.body.evaluate(self)
+
+        for line in body:
+            if line == "i":
+                body[body.index(line)] = f"pushst {current_while_counter}\nload 1"
+
+        return [
+            "alloc 2",
+            "swap",
+            "store 1",
+            f"pushst {current_while_counter}",
+            "swap",
+            "store 0",
+            f"startwhile{current_while_counter}:",
+            f"pushst {current_while_counter}",
+            "load 0",
+            "dup 1",
+            "pushi 0",
+            "sup",
+            f"jz ifreverseloop{current_while_counter}",
+            f"pushst {current_while_counter}",
+            "load 1",
+            "sup",
+            f"jump elsereverseloop{current_while_counter}",
+            f"ifreverseloop{current_while_counter}:",
+            f"pushst {current_while_counter}",
+            "load 1",
+            "inf",
+            f"elsereverseloop{current_while_counter}:",
+            f"jz endwhile{current_while_counter}",
+            *body,
+            f"pushst {current_while_counter}",
+            "load 1",
+            "add",
+            f"pushst {current_while_counter}",
+            "swap",
+            "store 1",
+            f"jump startwhile{current_while_counter}",
+            f"endwhile{current_while_counter}:",
+            "popst",
+        ]
+
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
         if if_statement.with_else:
             return self._visit_if_statement_with_else(if_statement)
