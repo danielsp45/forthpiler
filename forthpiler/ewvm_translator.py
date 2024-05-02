@@ -17,6 +17,7 @@ class EWVMTranslator(ast.Translator):
             "i": ["i"],
             "j": ["j"],
         }
+        self.spaces_call_counter = 0
 
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
 
@@ -157,6 +158,22 @@ class EWVMTranslator(ast.Translator):
 
         if value in self.predefined_functions:
             return self.predefined_functions[value]
+
+        if value == "spaces":
+            current_spaces_call_counter = self.spaces_call_counter
+            self.spaces_call_counter += 1
+            return [
+                f"spaces{current_spaces_call_counter}:",
+                "pushi 32",
+                "writechr",
+                "pushi 1",
+                "sub",
+                "dup 1",
+                "pushi 0",
+                "equal",
+                f"jz spaces{current_spaces_call_counter}",
+                "pop 1",
+            ]
 
         raise ast.TranslationError(f"Literal {value} not found")
 
