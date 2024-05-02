@@ -17,6 +17,7 @@ class EWVMTranslator(ast.Translator):
             "i": ["i"],
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
+        self.user_declared_variables: List[str] = []
         self.if_counter = 0
         self.while_counter = 0
 
@@ -137,6 +138,33 @@ class EWVMTranslator(ast.Translator):
             *if_statement.if_true.evaluate(self),
             f"endif{current_if_counter}:",
             *if_statement.always.evaluate(self),
+        ]
+
+    def visit_variable_declaration(
+        self, variable_declaration: ast.VariableDeclaration
+    ) -> List[str]:
+        self.user_declared_variables.append(variable_declaration.name)
+
+        return []
+
+    def visit_store_variable(self, store_variable: ast.StoreVariable) -> List[str]:
+        if store_variable.name not in self.user_declared_variables:
+            raise ast.TranslationError(f"Variable {store_variable.name} not declared")
+
+        variable_index = self.user_declared_variables.index(store_variable.name)
+
+        return [
+            f"storeg {variable_index}",
+        ]
+
+    def visit_fetch_variable(self, fetch_variable: ast.FetchVariable) -> List[str]:
+        if fetch_variable.name not in self.user_declared_variables:
+            raise ast.TranslationError(f"Variable {fetch_variable.name} not declared")
+
+        variable_index = self.user_declared_variables.index(fetch_variable.name)
+
+        return [
+            f"pushg {variable_index}",
         ]
 
     def visit_literal(self, literal: ast.Literal) -> List[str]:

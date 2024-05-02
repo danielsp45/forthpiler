@@ -12,6 +12,9 @@ class ForthLex(object):
         "do": "DO",
         "loop": "LOOP",
         "+loop": "PLUS_LOOP",
+        "variable": "VARIABLE_DECLARATION",
+        "!": "STORE",
+        "@": "FETCH",
     }
 
     tokens = [
@@ -55,6 +58,9 @@ class ForthLex(object):
     t_NOT_EQUALS = r"<>"
     t_LESS_THAN = r"<"
     t_GREATER_THAN = r">"
+
+    t_STORE = r"!"
+    t_FETCH = r"@"
 
     def t_LESS_THAN_OR_EQUAL_TO(self, t):
         r"<="
