@@ -149,3 +149,5 @@ cython_debug/
 .idea
 parser.out
 parsetab.py
+
+forthpiler/visualize/*

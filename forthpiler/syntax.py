@@ -2,54 +2,54 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import List, override
+from typing import List, override, TypeVar, Generic
+
+T = TypeVar('T', bound='Translator')
 
 
-class Translator(ABC):
+class Translator(ABC, Generic[T]):
     @abstractmethod
-    def visit_number(self, number: Number) -> List[str]:
+    def visit_number(self, number: Number) -> T:
         pass
 
     @abstractmethod
-    def visit_operator(self, operator: Operator) -> List[str]:
+    def visit_operator(self, operator: Operator) -> T:
         pass
 
     @abstractmethod
-    def visit_comparison_operator(
-        self, comparison_operator: ComparisonOperator
-    ) -> List[str]:
+    def visit_comparison_operator(self, comparison_operator: ComparisonOperator) -> T:
         pass
 
     @abstractmethod
-    def visit_function(self, function: Function) -> List[str]:
+    def visit_function(self, function: Function) -> T:
         pass
 
     @abstractmethod
-    def visit_do_loop_statement(self, do_loop: DoLoopStatement) -> List[str]:
+    def visit_do_loop_statement(self, do_loop: DoLoopStatement) -> T:
         pass
 
     @abstractmethod
-    def visit_do_plus_loop_statement(self, do_loop: DoPlusLoopStatement) -> List[str]:
+    def visit_do_plus_loop_statement(self, do_loop: DoPlusLoopStatement) -> T:
         pass
 
     @abstractmethod
-    def visit_if_statement(self, if_statement: IfStatement) -> List[str]:
+    def visit_if_statement(self, if_statement: IfStatement) -> T:
         pass
 
     @abstractmethod
-    def visit_literal(self, literal: Literal) -> List[str]:
+    def visit_literal(self, literal: Literal) -> T:
         pass
 
     @abstractmethod
-    def visit_print_string(self, print_string: PrintString) -> List[str]:
+    def visit_print_string(self, print_string: PrintString) -> T:
         pass
 
     @abstractmethod
-    def visit_char_function(self, char_function: CharFunction) -> List[str]:
+    def visit_char_function(self, char_function: CharFunction) -> T:
         pass
 
     @abstractmethod
-    def translate(self, ast: AbstractSyntaxTree) -> List[str]:
+    def translate(self, ast: AbstractSyntaxTree) -> T:
         pass
 
 
@@ -233,10 +233,10 @@ class DoPlusLoopStatement(Expression):
 
 class IfStatement(Expression):
     def __init__(
-        self,
-        if_true: AbstractSyntaxTree,
-        if_false: AbstractSyntaxTree,
-        always: AbstractSyntaxTree,
+            self,
+            if_true: AbstractSyntaxTree,
+            if_false: AbstractSyntaxTree | None,
+            always: AbstractSyntaxTree,
     ):
         super().__init__()
         self.if_true = if_true
@@ -252,9 +252,9 @@ class IfStatement(Expression):
     @override
     def __eq__(self, other):
         return (
-            self.if_true == other.if_true
-            and self.if_false == other.if_false
-            and self.always == other.always
+                self.if_true == other.if_true
+                and self.if_false == other.if_false
+                and self.always == other.always
         )
 
     @override
