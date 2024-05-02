@@ -15,7 +15,9 @@ class EWVMTranslator(ast.Translator):
             "2dup": ["pushsp", "load -1"] * 2,
             "drop": ["pop 1"],
             "i": ["i"],
+            "j": ["j"],
         }
+
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
 
         self.if_counter = 0
@@ -236,6 +238,9 @@ class EWVMTranslator(ast.Translator):
         for index, line in enumerate(body):
             if line == "i":
                 body[index] = f"pushst {current_heap_counter}\nload 1"
+
+            if line == "j":
+                body[index] = f"pushst {current_heap_counter - 1}\nload 1"
 
         return body
 
