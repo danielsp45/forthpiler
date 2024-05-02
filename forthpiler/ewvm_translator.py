@@ -17,8 +17,10 @@ class EWVMTranslator(ast.Translator):
             "i": ["i"],
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
+
         self.if_counter = 0
         self.while_counter = 0
+        self.function_counter = 0
 
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
@@ -143,7 +145,22 @@ class EWVMTranslator(ast.Translator):
         value = literal.content.lower()
 
         if value in self.user_defined_functions:
-            return self.user_defined_functions[value].evaluate(self)
+            previous_recurse = self.predefined_functions.get("recurse", None)
+            previous_exit = self.predefined_functions.get("exit", None)
+
+            function_label = f"function{value}{self.function_counter}"
+            self.predefined_functions["exit"] = [f"jump end{function_label}"]
+            self.predefined_functions["recurse"] = [f"jump {function_label}"]
+            self.function_counter += 1
+            result = [
+                f"{function_label}:",
+                *self.user_defined_functions[value].evaluate(self),
+                f"end{function_label}:",
+            ]
+
+            self.predefined_functions["recurse"] = previous_recurse
+            self.predefined_functions["exit"] = previous_exit
+            return result
 
         if value in self.predefined_functions:
             return self.predefined_functions[value]
@@ -151,10 +168,10 @@ class EWVMTranslator(ast.Translator):
         raise ast.TranslationError(f"Literal {value} not found")
 
     def visit_print_string(self, print_string: ast.PrintString) -> List[str]:
-        return [f'pushs "{print_string.content}"\nwrites']
+        return [f"pushs {print_string.content}", "writes"]
 
     def visit_char_function(self, char_function: ast.CharFunction) -> List[str]:
-        return [f'pushs "{char_function.content}"\nchrcode']
+        return [f"pushs {char_function.content}", "chrcode"]
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
         return [res for expr in ast.expressions for res in expr.evaluate(self)]

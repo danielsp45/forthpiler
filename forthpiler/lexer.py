@@ -97,12 +97,6 @@ class ForthLex(object):
         t.value = t.value[3:-1]
         return t
 
-    # This MOD needs to be here because of conflicts with LITERAL
-    # Check https://stackoverflow.com/questions/2910338/python-yacc-lexer-token-priority
-    def t_MOD(self, t):
-        r"""MOD"""
-        return t
-
     def t_CHAR_FUNC(self, t):
         r"""[cC][hH][aA][rR]\s."""
         t.value = t.value[-1]
@@ -120,6 +114,10 @@ class ForthLex(object):
         if t.value.isdigit():
             t.type = "NUMBER"
             t.value = int(t.value)
+            return t
+
+        if t.value == "MOD":
+            t.type = "MOD"
             return t
 
         t.type = self.reserved.get(t.value.lower(), "LITERAL")
