@@ -29,9 +29,7 @@ class Translator(ABC):
         pass
 
     @abstractmethod
-    def visit_do_plus_loop_statement(
-        self, do_plus_loop: DoPlusLoopStatement
-    ) -> List[str]:
+    def visit_do_plus_loop_statement(self, do_loop: DoPlusLoopStatement) -> List[str]:
         pass
 
     @abstractmethod
