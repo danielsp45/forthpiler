@@ -17,8 +17,10 @@ class EWVMTranslator(ast.Translator):
             "i": ["i"],
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
+
         self.if_counter = 0
         self.while_counter = 0
+        self.heap_counter = 0
 
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
@@ -77,15 +79,17 @@ class EWVMTranslator(ast.Translator):
     def visit_do_loop_statement(self, do_loop: ast.DoLoopStatement) -> List[str]:
         current_while_counter = self.while_counter
         self.while_counter += 1
+
+        current_heap_counter = self.heap_counter
+        self.heap_counter += 1
+
         body = do_loop.body.evaluate(self)
-
-        initialization = self._generate_loop_initialization(current_while_counter)
-
-        loop_condition = self._generate_loop_condition(current_while_counter)
-
-        loop_body = self._generate_loop_body(body, current_while_counter)
-
-        loop_end = self._generate_loop_end(current_while_counter)
+        initialization = self._generate_loop_initialization(current_heap_counter)
+        loop_condition = self._generate_loop_condition(
+            current_while_counter, current_heap_counter
+        )
+        loop_body = self._generate_loop_body(body, current_heap_counter)
+        loop_end = self._generate_loop_end(current_while_counter, current_heap_counter)
 
         return initialization + loop_condition + loop_body + loop_end
 
@@ -94,15 +98,19 @@ class EWVMTranslator(ast.Translator):
     ) -> List[str]:
         current_while_counter = self.while_counter
         self.while_counter += 1
+
+        current_heap_counter = self.heap_counter
+        self.heap_counter += 1
+
         body = do_loop.body.evaluate(self)
-
-        initialization = self._generate_plus_loop_initialization(current_while_counter)
-
-        loop_condition = self._generate_plus_loop_condition(current_while_counter)
-
-        loop_body = self._generate_loop_body(body, current_while_counter)
-
-        loop_end = self._generate_plus_loop_end(current_while_counter)
+        initialization = self._generate_plus_loop_initialization(current_heap_counter)
+        loop_condition = self._generate_plus_loop_condition(
+            current_while_counter, current_heap_counter
+        )
+        loop_body = self._generate_loop_body(body, current_heap_counter)
+        loop_end = self._generate_plus_loop_end(
+            current_while_counter, current_heap_counter
+        )
 
         return initialization + loop_condition + loop_body + loop_end
 
@@ -159,81 +167,89 @@ class EWVMTranslator(ast.Translator):
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
         return [res for expr in ast.expressions for res in expr.evaluate(self)]
 
-    def _generate_loop_initialization(self, current_while_counter: int) -> List[str]:
+    def _generate_loop_initialization(self, current_heap_counter: int) -> List[str]:
         return [
             "alloc 2",
             "swap",
             "store 1",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "swap",
             "store 0",
         ]
 
     def _generate_plus_loop_initialization(
-        self, current_while_counter: int
+        self, current_heap_counter: int
     ) -> List[str]:
         return [
             "dup 1",
             "alloc 3",
             "swap",
             "store 1",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "swap",
             "store 2",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "swap",
             "store 0",
         ]
 
-    def _generate_plus_loop_condition(self, current_while_counter: int) -> List[str]:
+    def _generate_plus_loop_condition(
+        self, current_while_counter: int, current_heap_counter: int
+    ) -> List[str]:
         return [
             f"startwhile{current_while_counter}:",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "load 0",
             "dup 1",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "load 2",
             "sup",
             f"jz ifreverseloop{current_while_counter}",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "load 1",
             "sup",
             f"jump elsereverseloop{current_while_counter}",
             f"ifreverseloop{current_while_counter}:",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "load 1",
             "inf",
             f"elsereverseloop{current_while_counter}:",
             f"jz endwhile{current_while_counter}",
         ]
 
-    def _generate_loop_condition(self, current_while_counter: int) -> List[str]:
+    def _generate_loop_condition(
+        self, current_while_counter: int, current_heap_counter: int
+    ) -> List[str]:
         return [
             f"startwhile{current_while_counter}:",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "load 0",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "load 1",
             "sup",
             f"jz endwhile{current_while_counter}",
         ]
 
     def _generate_loop_body(
-        self, body: List[str], current_while_counter: int
+        self, body: List[str], current_heap_counter: int
     ) -> List[str]:
         for index, line in enumerate(body):
             if line == "i":
-                body[index] = f"pushst {current_while_counter}\nload 1"
+                body[index] = f"pushst {current_heap_counter}\nload 1"
 
         return body
 
-    def _generate_loop_end(self, current_while_counter: int) -> List[str]:
+    def _generate_loop_end(
+        self, current_while_counter: int, current_heap_counter: int
+    ) -> List[str]:
+        self.heap_counter -= 1
+
         return [
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "load 1",
             "pushi 1",
             "add",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "swap",
             "store 1",
             f"jump startwhile{current_while_counter}",
@@ -241,12 +257,16 @@ class EWVMTranslator(ast.Translator):
             "popst",
         ]
 
-    def _generate_plus_loop_end(self, current_while_counter: int) -> List[str]:
+    def _generate_plus_loop_end(
+        self, current_while_counter: int, current_heap_counter: int
+    ) -> List[str]:
+        self.heap_counter -= 1
+
         return [
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "load 1",
             "add",
-            f"pushst {current_while_counter}",
+            f"pushst {current_heap_counter}",
             "swap",
             "store 1",
             f"jump startwhile{current_while_counter}",
