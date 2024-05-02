@@ -165,9 +165,7 @@ class EWVMTranslator(ast.Translator):
 
         variable_index = self.user_declared_variables.index(store_variable.name)
 
-        return [
-            f"storeg {variable_index}",
-        ]
+        return [f"storeg {variable_index}"]
 
     def visit_fetch_variable(self, fetch_variable: ast.FetchVariable) -> List[str]:
         if fetch_variable.name not in self.user_declared_variables:
@@ -175,9 +173,7 @@ class EWVMTranslator(ast.Translator):
 
         variable_index = self.user_declared_variables.index(fetch_variable.name)
 
-        return [
-            f"pushg {variable_index}",
-        ]
+        return [f"pushg {variable_index}"]
 
     def visit_literal(self, literal: ast.Literal) -> List[str]:
         value = literal.content.lower()
@@ -213,7 +209,13 @@ class EWVMTranslator(ast.Translator):
         return [f'pushs "{char_function.content}"\nchrcode']
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
-        return [res for expr in ast.expressions for res in expr.evaluate(self)]
+        code = [res for expr in ast.expressions for res in expr.evaluate(self)]
+
+        code.insert(0, f"start")
+        for _ in range(len(self.user_declared_variables)):
+            code.insert(0, f"pushi 0")
+
+        return code
 
     def _generate_loop_initialization(self, current_heap_counter: int) -> List[str]:
         return [
