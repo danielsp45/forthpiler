@@ -159,14 +159,6 @@ class EWVMTranslator(ast.Translator):
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
         return [res for expr in ast.expressions for res in expr.evaluate(self)]
 
-    def _modify_loop_body(
-        self, body: List[str], current_while_counter: int
-    ) -> List[str]:
-        for line in body:
-            if line == "i":
-                body[body.index(line)] = f"pushst {current_while_counter}\nload 1"
-        return body
-
     def _generate_loop_initialization(self, current_while_counter: int) -> List[str]:
         return [
             "alloc 2",
@@ -229,9 +221,10 @@ class EWVMTranslator(ast.Translator):
     def _generate_loop_body(
         self, body: List[str], current_while_counter: int
     ) -> List[str]:
-        for line in body:
+        for index, line in enumerate(body):
             if line == "i":
-                body[body.index(line)] = f"pushst {current_while_counter}\nload 1"
+                body[index] = f"pushst {current_while_counter}\nload 1"
+
         return body
 
     def _generate_loop_end(self, current_while_counter: int) -> List[str]:
