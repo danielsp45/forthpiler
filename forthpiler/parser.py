@@ -21,11 +21,6 @@ class ForthParser:
         """grammar : expression grammar"""
         p[0] = [p[1]] + p[2]
 
-    def p_expression_while_loop(self, p):
-        """expression : while_loop
-        | while_plus_loop"""
-        p[0] = p[1]
-
     def p_expression_number(self, p):
         """expression : NUMBER"""
         p[0] = ast.Number(p[1])
@@ -57,6 +52,10 @@ class ForthParser:
     def p_expression_fetch(self, p):
         """expression : LITERAL FETCH"""
         p[0] = ast.FetchVariable(p[1])
+
+    def p_expression_loop_statement(self, p):
+        """expression : loop_statement"""
+        p[0] = p[1]
 
     def p_expression_literal(self, p):
         """expression : LITERAL"""
@@ -152,14 +151,6 @@ class ForthParser:
         """function : COLON LITERAL ast SEMI_COLON"""
         p[0] = ast.Function(p[2], p[3])
 
-    def p_while_loop(self, p):
-        """while_loop : DO ast LOOP"""
-        p[0] = ast.DoLoopStatement(p[2])
-
-    def p_while_plus_loop(self, p):
-        """while_plus_loop : DO ast PLUS_LOOP"""
-        p[0] = ast.DoPlusLoopStatement(p[2])
-
     def p_if_statement_without_else(self, p):
         """if_statement : IF ast THEN ast"""
         p[0] = ast.IfStatement(p[2], None, p[4])
@@ -167,6 +158,14 @@ class ForthParser:
     def p_if_statement_with_else(self, p):
         """if_statement : IF ast ELSE ast THEN ast"""
         p[0] = ast.IfStatement(p[2], p[4], p[6])
+
+    def p_do_statement_normal(self, p):
+        """loop_statement : DO ast LOOP"""
+        p[0] = ast.DoLoopStatement(p[2])
+
+    def p_do_statement_plus(self, p):
+        """loop_statement : DO ast PLUS_LOOP"""
+        p[0] = ast.DoPlusLoopStatement(p[2])
 
     def p_error(self, p):
         if p:

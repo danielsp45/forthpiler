@@ -6,6 +6,7 @@ expression : NUMBER
            | comparison_operator
            | function
            | if_statement
+           | loop_statement
            | LITERAL
            | PRINT_STRING
            | CHAR_FUNC
@@ -32,5 +33,8 @@ comparison_operator : EQUALS
 
 function : COLON LITERAL grammar SEMI_COLON
 
-if_statement: IF grammar THEN grammar
-            | IF grammar ELSE grammar THEN grammar
+if_statement : IF grammar THEN grammar
+             | IF grammar ELSE grammar THEN grammar
+
+loop_statement : DO grammar LOOP
+               | DO grammar PLUS_LOOP
