@@ -150,4 +150,4 @@ cython_debug/
 parser.out
 parsetab.py
 
-forthpiler/visualize/*
+visualize/
