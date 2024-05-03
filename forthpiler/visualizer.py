@@ -68,6 +68,23 @@ class GraphvizTranslator(syntax.Translator[str]):
 
         return e_id
 
+    def visit_variable_declaration(
+        self, variable_declaration: VariableDeclaration
+    ) -> str:
+        e_id = self.get_new_id()
+        self.graph.node(e_id, str(variable_declaration), shape="box")
+        return e_id
+
+    def visit_store_variable(self, store_variable: StoreVariable) -> str:
+        e_id = self.get_new_id()
+        self.graph.node(e_id, str(store_variable), shape="box")
+        return e_id
+
+    def visit_fetch_variable(self, fetch_variable: FetchVariable) -> str:
+        e_id = self.get_new_id()
+        self.graph.node(e_id, str(fetch_variable), shape="box")
+        return e_id
+
     def visit_literal(self, literal: Literal) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, str(literal), shape="box")

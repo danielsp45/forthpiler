@@ -37,6 +37,20 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
+    def visit_variable_declaration(
+        self, variable_declaration: VariableDeclaration
+    ) -> T:
+        pass
+
+    @abstractmethod
+    def visit_store_variable(self, store_variable: StoreVariable) -> T:
+        pass
+
+    @abstractmethod
+    def visit_fetch_variable(self, fetch_variable: FetchVariable) -> T:
+        pass
+
+    @abstractmethod
     def visit_literal(self, literal: Literal) -> T:
         pass
 
@@ -258,6 +272,60 @@ class IfStatement(Expression):
     @override
     def evaluate(self, translator: Translator):
         return translator.visit_if_statement(self)
+
+
+class VariableDeclaration(Expression):
+    def __init__(self, name: str):
+        super().__init__()
+        self.name = name.lower()
+
+    @override
+    def __repr__(self):
+        return f"VariableDeclaration(name={self.name})"
+
+    @override
+    def __eq__(self, other):
+        return self.name == other.name
+
+    @override
+    def evaluate(self, translator: Translator):
+        return translator.visit_variable_declaration(self)
+
+
+class StoreVariable(Expression):
+    def __init__(self, name: str):
+        super().__init__()
+        self.name = name.lower()
+
+    @override
+    def __repr__(self):
+        return f"StoreVariable(name={self.name})"
+
+    @override
+    def __eq__(self, other):
+        return self.name == other.name
+
+    @override
+    def evaluate(self, translator: Translator):
+        return translator.visit_store_variable(self)
+
+
+class FetchVariable(Expression):
+    def __init__(self, name: str):
+        super().__init__()
+        self.name = name.lower()
+
+    @override
+    def __repr__(self):
+        return f"FetchVariable(name={self.name})"
+
+    @override
+    def __eq__(self, other):
+        return self.name == other.name
+
+    @override
+    def evaluate(self, translator: Translator):
+        return translator.visit_fetch_variable(self)
 
 
 class PrintString(Expression):

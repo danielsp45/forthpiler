@@ -20,10 +20,12 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self.spaces_call_counter = 0
 
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
-
+        self.user_declared_variables: List[str] = []
         self.if_counter = 0
         self.do_loop_counter = 0
         self.heap_counter = 0
+
+        self.started = False
 
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
@@ -150,6 +152,29 @@ class EWVMTranslator(ast.Translator[List[str]]):
             f"endif{current_if_counter}:",
         ]
 
+    def visit_variable_declaration(
+        self, variable_declaration: ast.VariableDeclaration
+    ) -> List[str]:
+        self.user_declared_variables.append(variable_declaration.name)
+
+        return []
+
+    def visit_store_variable(self, store_variable: ast.StoreVariable) -> List[str]:
+        if store_variable.name not in self.user_declared_variables:
+            raise ast.TranslationError(f"Variable {store_variable.name} not declared")
+
+        variable_index = self.user_declared_variables.index(store_variable.name)
+
+        return [f"storeg {variable_index}"]
+
+    def visit_fetch_variable(self, fetch_variable: ast.FetchVariable) -> List[str]:
+        if fetch_variable.name not in self.user_declared_variables:
+            raise ast.TranslationError(f"Variable {fetch_variable.name} not declared")
+
+        variable_index = self.user_declared_variables.index(fetch_variable.name)
+
+        return [f"pushg {variable_index}"]
+
     def visit_literal(self, literal: ast.Literal) -> List[str]:
         value = literal.content.lower()
 
@@ -184,7 +209,18 @@ class EWVMTranslator(ast.Translator[List[str]]):
         return [f'pushs "{char_function.content}"\nchrcode']
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
-        return [res for expr in ast.expressions for res in expr.evaluate(self)]
+        if not self.started:
+            self.started = True
+            code = [res for expr in ast.expressions for res in expr.evaluate(self)]
+
+            code.insert(0, f"start")
+            for _ in range(len(self.user_declared_variables)):
+                code.insert(0, f"pushi 0")
+            code.append("stop")
+        else:
+            code = [res for expr in ast.expressions for res in expr.evaluate(self)]
+
+        return code
 
     def _generate_loop_initialization(self, current_heap_counter: int) -> List[str]:
         return [

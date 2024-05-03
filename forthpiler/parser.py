@@ -41,6 +41,18 @@ class ForthParser:
         """expression : if_statement"""
         p[0] = p[1]
 
+    def p_expression_variable_declaration(self, p):
+        """expression : VARIABLE_DECLARATION LITERAL"""
+        p[0] = ast.VariableDeclaration(p[2])
+
+    def p_expression_store(self, p):
+        """expression : LITERAL STORE"""
+        p[0] = ast.StoreVariable(p[1])
+
+    def p_expression_fetch(self, p):
+        """expression : LITERAL FETCH"""
+        p[0] = ast.FetchVariable(p[1])
+
     def p_expression_loop_statement(self, p):
         """expression : loop_statement"""
         p[0] = p[1]

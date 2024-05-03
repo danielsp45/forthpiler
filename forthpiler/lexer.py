@@ -12,6 +12,9 @@ class ForthLex(object):
         "do": "DO",
         "loop": "LOOP",
         "+loop": "PLUS_LOOP",
+        "variable": "VARIABLE_DECLARATION",
+        "!": "STORE",
+        "@": "FETCH",
     }
 
     tokens = [
@@ -116,12 +119,13 @@ class ForthLex(object):
         return t
 
     def t_LITERAL(self, t):
-        r"""[\.a-zA-Z\d\?][-\.a-zA-Z\d]*"""
+        r"""[\.a-zA-Z\d\?\!\@][-\.a-zA-Z\d]*"""
         if t.value.isdigit():
             t.type = "NUMBER"
             t.value = int(t.value)
             return t
 
+        # Check if the value is a reserved word and if it is, change the type, otherwise, it is a LITERAL
         t.type = self.reserved.get(t.value.lower(), "LITERAL")
         return t
 
