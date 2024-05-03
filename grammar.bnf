@@ -10,6 +10,9 @@ expression : NUMBER
            | LITERAL
            | PRINT_STRING
            | CHAR_FUNC
+           | VARIABLE_DECLARATION LITERAL
+           | LITERAL STORE
+           | LITERAL FETCH
 
 operator : PLUS
          | MINUS

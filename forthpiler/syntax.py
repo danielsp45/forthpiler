@@ -43,15 +43,15 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def visit_store_variable(self, store_variable: StoreVariable) -> List[str]:
+    def visit_store_variable(self, store_variable: StoreVariable) -> T:
         pass
 
     @abstractmethod
-    def visit_fetch_variable(self, fetch_variable: FetchVariable) -> List[str]:
+    def visit_fetch_variable(self, fetch_variable: FetchVariable) -> T:
         pass
 
     @abstractmethod
-    def visit_literal(self, literal: Literal) -> List[str]:
+    def visit_literal(self, literal: Literal) -> T:
         pass
 
     @abstractmethod
