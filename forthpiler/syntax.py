@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import List, override, TypeVar, Generic
+from typing import Generic, List, Optional, TypeVar, override
 
 T = TypeVar("T", bound="Translator")
 
@@ -118,6 +118,9 @@ class OperatorType(Enum):
     def __eq__(self, other):
         return self.value == other.value
 
+    def __repr__(self):
+        return self.name
+
 
 class Operator(Expression):
     def __init__(self, operator_type: OperatorType):
@@ -126,7 +129,7 @@ class Operator(Expression):
 
     @override
     def __repr__(self):
-        return f"Operator({self.operator_type})"
+        return f"Operator({self.operator_type.__repr__()})"
 
     @override
     def __eq__(self, other):
@@ -153,6 +156,9 @@ class ComparisonOperatorType(Enum):
     def __eq__(self, other):
         return self.value == other.value
 
+    def __repr__(self):
+        return self.name
+
 
 class ComparisonOperator(Expression):
     def __init__(self, comparison_operator_type: ComparisonOperatorType):
@@ -161,7 +167,7 @@ class ComparisonOperator(Expression):
 
     @override
     def __repr__(self):
-        return f"ComparisonOperator({self.comparison_operator_type})"
+        return f"ComparisonOperator({self.comparison_operator_type.__repr__()})"
 
     @override
     def __eq__(self, other):
@@ -179,7 +185,7 @@ class Literal(Expression):
 
     @override
     def __repr__(self):
-        return f"Literal({self.content})"
+        return f"Literal('{self.content}')"
 
     @override
     def __eq__(self, other):
@@ -247,29 +253,21 @@ class DoPlusLoopStatement(Expression):
 
 class IfStatement(Expression):
     def __init__(
-        self,
-        if_true: AbstractSyntaxTree,
-        if_false: AbstractSyntaxTree | None,
-        always: AbstractSyntaxTree,
+        self, if_true: AbstractSyntaxTree, if_false: Optional[AbstractSyntaxTree]
     ):
         super().__init__()
         self.if_true = if_true
         self.if_false = if_false
-        self.always = always
 
         self.with_else = if_false is not None
 
     @override
     def __repr__(self):
-        return f"IfStatement(if_true={self.if_true}, if_false={self.if_false}, always={self.always})"
+        return f"IfStatement(if_true={self.if_true}, if_false={self.if_false}"
 
     @override
     def __eq__(self, other):
-        return (
-            self.if_true == other.if_true
-            and self.if_false == other.if_false
-            and self.always == other.always
-        )
+        return self.if_true == other.if_true and self.if_false == other.if_false
 
     @override
     def evaluate(self, translator: Translator):

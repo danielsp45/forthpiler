@@ -152,12 +152,12 @@ class ForthParser:
         p[0] = ast.Function(p[2], p[3])
 
     def p_if_statement_without_else(self, p):
-        """if_statement : IF ast THEN ast"""
-        p[0] = ast.IfStatement(p[2], None, p[4])
+        """if_statement : IF ast THEN"""
+        p[0] = ast.IfStatement(p[2], None)
 
     def p_if_statement_with_else(self, p):
-        """if_statement : IF ast ELSE ast THEN ast"""
-        p[0] = ast.IfStatement(p[2], p[4], p[6])
+        """if_statement : IF ast ELSE ast THEN"""
+        p[0] = ast.IfStatement(p[2], p[4])
 
     def p_do_statement_normal(self, p):
         """loop_statement : DO ast LOOP"""
