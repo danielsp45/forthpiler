@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import List, override, TypeVar, Generic
+from typing import Generic, List, Optional, TypeVar, override
 
-T = TypeVar('T', bound='Translator')
+T = TypeVar("T", bound="Translator")
 
 
 class Translator(ABC, Generic[T]):
@@ -233,29 +233,21 @@ class DoPlusLoopStatement(Expression):
 
 class IfStatement(Expression):
     def __init__(
-            self,
-            if_true: AbstractSyntaxTree,
-            if_false: AbstractSyntaxTree | None,
-            always: AbstractSyntaxTree,
+        self, if_true: AbstractSyntaxTree, if_false: Optional[AbstractSyntaxTree]
     ):
         super().__init__()
         self.if_true = if_true
         self.if_false = if_false
-        self.always = always
 
         self.with_else = if_false is not None
 
     @override
     def __repr__(self):
-        return f"IfStatement(if_true={self.if_true}, if_false={self.if_false}, always={self.always})"
+        return f"IfStatement(if_true={self.if_true}, if_false={self.if_false}"
 
     @override
     def __eq__(self, other):
-        return (
-                self.if_true == other.if_true
-                and self.if_false == other.if_false
-                and self.always == other.always
-        )
+        return self.if_true == other.if_true and self.if_false == other.if_false
 
     @override
     def evaluate(self, translator: Translator):

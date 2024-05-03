@@ -7,7 +7,7 @@ from forthpiler.syntax import *
 class GraphvizTranslator(syntax.Translator[str]):
     def __init__(self):
         self.current_id = 0
-        self.graph = graphviz.Digraph(comment='Visualize AST')
+        self.graph = graphviz.Digraph(comment="Visualize AST")
 
     def get_new_id(self):
         self.current_id += 1
@@ -15,17 +15,17 @@ class GraphvizTranslator(syntax.Translator[str]):
 
     def visit_number(self, number: Number) -> str:
         e_id = self.get_new_id()
-        self.graph.node(e_id, str(number), shape='box')
+        self.graph.node(e_id, str(number), shape="box")
         return e_id
 
     def visit_operator(self, operator: Operator) -> str:
         e_id = self.get_new_id()
-        self.graph.node(e_id, str(operator), shape='box')
+        self.graph.node(e_id, str(operator), shape="box")
         return e_id
 
     def visit_comparison_operator(self, comparison_operator: ComparisonOperator) -> str:
         e_id = self.get_new_id()
-        self.graph.node(e_id, str(comparison_operator), shape='box')
+        self.graph.node(e_id, str(comparison_operator), shape="box")
         return e_id
 
     def visit_function(self, function: Function) -> str:
@@ -53,21 +53,18 @@ class GraphvizTranslator(syntax.Translator[str]):
         e_id = self.get_new_id()
         self.graph.node(e_id, f"IfStatement")
         if_true_id = self.get_new_id()
+
         self.graph.node(if_true_id, f"IfTrue")
         if_true_ast_id = self.translate(if_statement.if_true)
         self.graph.edge(e_id, if_true_id)
         self.graph.edge(if_true_id, if_true_ast_id)
+
         if if_statement.if_false is not None:
             if_false_id = self.get_new_id()
             self.graph.node(if_false_id, f"IfFalse")
             if_false_ast_id = self.translate(if_statement.if_false)
             self.graph.edge(e_id, if_false_id)
             self.graph.edge(if_false_id, if_false_ast_id)
-        always_id = self.get_new_id()
-        self.graph.node(always_id, f"Always")
-        always_ast_id = self.translate(if_statement.always)
-        self.graph.edge(e_id, always_id)
-        self.graph.edge(always_id, always_ast_id)
 
         return e_id
 
@@ -78,12 +75,12 @@ class GraphvizTranslator(syntax.Translator[str]):
 
     def visit_print_string(self, print_string: PrintString) -> str:
         e_id = self.get_new_id()
-        self.graph.node(e_id, str(print_string), shape='box')
+        self.graph.node(e_id, str(print_string), shape="box")
         return e_id
 
     def visit_char_function(self, char_function: CharFunction) -> str:
         e_id = self.get_new_id()
-        self.graph.node(e_id, str(char_function), shape='box')
+        self.graph.node(e_id, str(char_function), shape="box")
         return e_id
 
     def translate(self, ast: AbstractSyntaxTree) -> str:
@@ -99,4 +96,4 @@ def visualize(ast: syntax.AbstractSyntaxTree):
     translator = GraphvizTranslator()
     translator.translate(ast)
 
-    translator.graph.render('visualize/result', view=True)
+    translator.graph.render("visualize/result", view=True)
