@@ -4,11 +4,16 @@ from forthpiler.syntax import (
     AbstractSyntaxTree,
     ComparisonOperator,
     ComparisonOperatorType,
+    DoLoopStatement,
+    FetchVariable,
     Function,
     Literal,
     Number,
     Operator,
     OperatorType,
+    PrintString,
+    StoreVariable,
+    VariableDeclaration,
 )
 
 lexer = ForthLex().build()
@@ -118,5 +123,108 @@ def test_comparison_operators():
             Number(12),
             Number(0),
             ComparisonOperator(ComparisonOperatorType.GREATER_THAN_OR_EQUAL_TO),
+        ]
+    )
+
+
+def test_do_loop():
+    code = """10 0 DO I . LOOP"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Number(10),
+            Number(0),
+            DoLoopStatement(
+                AbstractSyntaxTree(
+                    [
+                        Literal("I"),
+                        Literal("."),
+                    ]
+                )
+            ),
+        ]
+    )
+
+
+def test_nested_do_loop():
+    code = """10 0 DO ." LINE: " 2 0 DO I . LOOP CR LOOP"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Number(10),
+            Number(0),
+            DoLoopStatement(
+                AbstractSyntaxTree(
+                    [
+                        PrintString("LINE: "),
+                        Number(2),
+                        Number(0),
+                        DoLoopStatement(
+                            AbstractSyntaxTree(
+                                [
+                                    Literal("I"),
+                                    Literal("."),
+                                ]
+                            )
+                        ),
+                        Literal("CR"),
+                    ]
+                )
+            ),
+        ]
+    )
+
+
+def test_do_plus_loop():
+    code = """10 0 DO I . 1 +LOOP"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Number(10),
+            Number(0),
+            DoLoopStatement(
+                AbstractSyntaxTree(
+                    [
+                        Literal("I"),
+                        Literal("."),
+                        Number(1),
+                    ]
+                )
+            ),
+        ]
+    )
+
+
+def test_variable_assignment():
+    code = """variable x 10 x ! x @ ."""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            VariableDeclaration("x"),
+            Number(10),
+            StoreVariable("x"),
+            FetchVariable("x"),
+            Literal("."),
+        ]
+    )
+
+
+def test_complex_variable_operations():
+    code = """VARIABLE DATE   VARIABLE MONTH   VARIABLE YEAR : STOREDATE  YEAR !  DATE !  MONTH ! ; 7 31 03 STOREDATE"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            VariableDeclaration("DATE"),
+            VariableDeclaration("MONTH"),
+            VariableDeclaration("YEAR"),
+            Function(
+                "STOREDATE",
+                AbstractSyntaxTree(
+                    [
+                        StoreVariable("YEAR"),
+                        StoreVariable("DATE"),
+                        StoreVariable("MONTH"),
+                    ]
+                ),
+            ),
+            Number(7),
+            Number(31),
+            Number(3),
+            Literal("STOREDATE"),
         ]
     )
