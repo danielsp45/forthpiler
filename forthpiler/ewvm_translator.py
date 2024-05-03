@@ -3,7 +3,7 @@ from typing import Dict, List
 import forthpiler.syntax as ast
 
 
-class EWVMTranslator(ast.Translator):
+class EWVMTranslator(ast.Translator[List[str]]):
     def __init__(self):
         self.predefined_functions: Dict[str, List[str]] = {
             ".": ["writei"],

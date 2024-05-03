@@ -2,38 +2,38 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import List, override
+from typing import List, override, TypeVar, Generic
+
+T = TypeVar("T", bound="Translator")
 
 
-class Translator(ABC):
+class Translator(ABC, Generic[T]):
     @abstractmethod
-    def visit_number(self, number: Number) -> List[str]:
+    def visit_number(self, number: Number) -> T:
         pass
 
     @abstractmethod
-    def visit_operator(self, operator: Operator) -> List[str]:
+    def visit_operator(self, operator: Operator) -> T:
         pass
 
     @abstractmethod
-    def visit_comparison_operator(
-        self, comparison_operator: ComparisonOperator
-    ) -> List[str]:
+    def visit_comparison_operator(self, comparison_operator: ComparisonOperator) -> T:
         pass
 
     @abstractmethod
-    def visit_function(self, function: Function) -> List[str]:
+    def visit_function(self, function: Function) -> T:
         pass
 
     @abstractmethod
-    def visit_do_loop_statement(self, do_loop: DoLoopStatement) -> List[str]:
+    def visit_do_loop_statement(self, do_loop: DoLoopStatement) -> T:
         pass
 
     @abstractmethod
-    def visit_do_plus_loop_statement(self, do_loop: DoPlusLoopStatement) -> List[str]:
+    def visit_do_plus_loop_statement(self, do_loop: DoPlusLoopStatement) -> T:
         pass
 
     @abstractmethod
-    def visit_if_statement(self, if_statement: IfStatement) -> List[str]:
+    def visit_if_statement(self, if_statement: IfStatement) -> T:
         pass
 
     @abstractmethod
@@ -55,15 +55,15 @@ class Translator(ABC):
         pass
 
     @abstractmethod
-    def visit_print_string(self, print_string: PrintString) -> List[str]:
+    def visit_print_string(self, print_string: PrintString) -> T:
         pass
 
     @abstractmethod
-    def visit_char_function(self, char_function: CharFunction) -> List[str]:
+    def visit_char_function(self, char_function: CharFunction) -> T:
         pass
 
     @abstractmethod
-    def translate(self, ast: AbstractSyntaxTree) -> List[str]:
+    def translate(self, ast: AbstractSyntaxTree) -> T:
         pass
 
 
@@ -249,7 +249,7 @@ class IfStatement(Expression):
     def __init__(
         self,
         if_true: AbstractSyntaxTree,
-        if_false: AbstractSyntaxTree,
+        if_false: AbstractSyntaxTree | None,
         always: AbstractSyntaxTree,
     ):
         super().__init__()

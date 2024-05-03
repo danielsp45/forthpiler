@@ -8,6 +8,7 @@ from forthpiler.ewvm_translator import EWVMTranslator
 from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
 from forthpiler.syntax import AbstractSyntaxTree
+from forthpiler.visualizer import visualize
 
 
 class InterpretingMode(Enum):
@@ -20,6 +21,10 @@ class InterpretingMode(Enum):
         "run >> ",
         lambda result: print(run_code("\n".join(result.evaluate(EWVMTranslator())))),
     )
+    VISUALIZE = (
+        "visualize >> ",
+        lambda result: visualize(result),
+    )
 
     def __init__(self, prefix, action):
         self.prefix = prefix
@@ -30,7 +35,7 @@ def main():
     lexer = ForthLex().build()
     parser = ForthParser(lexer)
 
-    commands = ("/parse", "/run", "/translate")
+    commands = ("/parse", "/run", "/translate", "/visualize")
     mode = InterpretingMode.TRANSLATE
     print(f"Starting in {mode.name}.")
     print(f"Change to other interpreter modes with {', '.join(commands)}")
