@@ -70,7 +70,7 @@ class GraphvizTranslator(syntax.Translator[str]):
 
     def visit_literal(self, literal: Literal) -> str:
         e_id = self.get_new_id()
-        self.graph.node(e_id, str(literal))
+        self.graph.node(e_id, str(literal), shape="box")
         return e_id
 
     def visit_print_string(self, print_string: PrintString) -> str:

@@ -104,6 +104,9 @@ class OperatorType(Enum):
     def __eq__(self, other):
         return self.value == other.value
 
+    def __repr__(self):
+        return self.name
+
 
 class Operator(Expression):
     def __init__(self, operator_type: OperatorType):
@@ -112,7 +115,7 @@ class Operator(Expression):
 
     @override
     def __repr__(self):
-        return f"Operator({self.operator_type})"
+        return f"Operator({self.operator_type.__repr__()})"
 
     @override
     def __eq__(self, other):
@@ -139,6 +142,9 @@ class ComparisonOperatorType(Enum):
     def __eq__(self, other):
         return self.value == other.value
 
+    def __repr__(self):
+        return self.name
+
 
 class ComparisonOperator(Expression):
     def __init__(self, comparison_operator_type: ComparisonOperatorType):
@@ -147,7 +153,7 @@ class ComparisonOperator(Expression):
 
     @override
     def __repr__(self):
-        return f"ComparisonOperator({self.comparison_operator_type})"
+        return f"ComparisonOperator({self.comparison_operator_type.__repr__()})"
 
     @override
     def __eq__(self, other):
@@ -165,7 +171,7 @@ class Literal(Expression):
 
     @override
     def __repr__(self):
-        return f"Literal({self.content})"
+        return f"Literal('{self.content}')"
 
     @override
     def __eq__(self, other):
