@@ -39,7 +39,7 @@ class Translator(ABC, Generic[T]):
     @abstractmethod
     def visit_variable_declaration(
         self, variable_declaration: VariableDeclaration
-    ) -> List[str]:
+    ) -> T:
         pass
 
     @abstractmethod
