@@ -122,7 +122,7 @@ class ForthLex(object):
         return t
 
     def t_LITERAL(self, t):
-        r"""[\.a-zA-Z\d\?][-\.a-zA-Z\d]*"""
+        r"""[\.a-zA-Z\d\?\!][-\.a-zA-Z\d]*"""
         if t.value.isdigit():
             t.type = "NUMBER"
             t.value = int(t.value)

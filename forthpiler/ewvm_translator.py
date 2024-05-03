@@ -25,6 +25,8 @@ class EWVMTranslator(ast.Translator):
         self.do_loop_counter = 0
         self.heap_counter = 0
 
+        self.started = False
+
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
 
@@ -209,11 +211,16 @@ class EWVMTranslator(ast.Translator):
         return [f'pushs "{char_function.content}"\nchrcode']
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
-        code = [res for expr in ast.expressions for res in expr.evaluate(self)]
+        if not self.started:
+            self.started = True
+            code = [res for expr in ast.expressions for res in expr.evaluate(self)]
 
-        code.insert(0, f"start")
-        for _ in range(len(self.user_declared_variables)):
-            code.insert(0, f"pushi 0")
+            code.insert(0, f"start")
+            for _ in range(len(self.user_declared_variables)):
+                code.insert(0, f"pushi 0")
+            self.started = True
+        else:
+            code = [res for expr in ast.expressions for res in expr.evaluate(self)]
 
         return code
 
