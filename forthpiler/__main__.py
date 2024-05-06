@@ -5,6 +5,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 
 from ewvmapi.ewvm_api import run_code
 from forthpiler.ewvm_translator import EWVMTranslator
+from forthpiler.semantic_analyzer import SemanticAnalyzer, SemanticError
 from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
 from forthpiler.syntax import AbstractSyntaxTree
@@ -54,6 +55,13 @@ def main():
                 continue
 
             result: AbstractSyntaxTree = parser.parse(s)
+
+            try:
+                result.evaluate(SemanticAnalyzer())
+            except SemanticError as e:
+                print("Error:", str(e))
+                continue
+
             if result:
                 mode.action(result)
 
