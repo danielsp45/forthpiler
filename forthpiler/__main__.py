@@ -2,8 +2,7 @@ from enum import Enum
 
 from prompt_toolkit import PromptSession
 from prompt_toolkit.patch_stdout import patch_stdout
-
-from colorist import red
+from prompt_toolkit import print_formatted_text, ANSI
 
 from ewvmapi.ewvm_api import run_code
 from forthpiler.ewvm_translator import EWVMTranslator
@@ -62,7 +61,7 @@ def main():
                 try:
                     mode.action(result)
                 except ast.TranslationError as e:
-                    red(str(e))
+                    print_formatted_text(ANSI(f"\x1b[31m{str(e)}"))
                     continue
 
 
