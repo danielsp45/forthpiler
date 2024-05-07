@@ -3,6 +3,8 @@ from enum import Enum
 from prompt_toolkit import PromptSession
 from prompt_toolkit.patch_stdout import patch_stdout
 
+from colorist import red
+
 from ewvmapi.ewvm_api import run_code
 from forthpiler.ewvm_translator import EWVMTranslator
 from forthpiler.lexer import ForthLex
@@ -60,7 +62,7 @@ def main():
                 try:
                     mode.action(result)
                 except ast.TranslationError as e:
-                    print("Error:", str(e))
+                    red(str(e))
                     continue
 
 
