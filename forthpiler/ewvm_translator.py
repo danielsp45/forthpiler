@@ -77,7 +77,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_function(self, function: ast.Function) -> List[str]:
         if function.name in self.user_defined_functions:
-            raise ast.TranslationError(f"Function {function.name} already defined")
+            raise ast.TranslationError(f"Function `{function.name}` already defined")
 
         self.user_defined_functions[function.name] = function.ast
         return []
@@ -166,7 +166,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_store_variable(self, store_variable: ast.StoreVariable) -> List[str]:
         if store_variable.name not in self.user_declared_variables:
-            raise ast.TranslationError(f"Variable {store_variable.name} not declared")
+            raise ast.TranslationError(f"Variable `{store_variable.name}` not declared")
 
         variable_index = self.user_declared_variables.index(store_variable.name)
 
@@ -174,7 +174,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_fetch_variable(self, fetch_variable: ast.FetchVariable) -> List[str]:
         if fetch_variable.name not in self.user_declared_variables:
-            raise ast.TranslationError(f"Variable {fetch_variable.name} not declared")
+            raise ast.TranslationError(f"Variable `{fetch_variable.name}` not declared")
 
         variable_index = self.user_declared_variables.index(fetch_variable.name)
 
@@ -184,7 +184,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         value = literal.content.lower()
 
         if value == "j" and self.loop_depth < 2:
-            raise ast.TranslationError("j is only allowed inside a nested loop")
+            raise ast.TranslationError("`j` is only allowed inside a nested loop")
 
         if value in self.user_defined_functions:
             return self.user_defined_functions[value].evaluate(self)
@@ -208,7 +208,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
                 "pop 1",
             ]
 
-        raise ast.TranslationError(f"Literal {value} not found")
+        raise ast.TranslationError(f"Literal `{value}` not found")
 
     def visit_print_string(self, print_string: ast.PrintString) -> List[str]:
         return [f'pushs "{print_string.content}"\nwrites']
