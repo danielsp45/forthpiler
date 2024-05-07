@@ -23,6 +23,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self.user_declared_variables: List[str] = []
         self.if_counter = 0
         self.do_loop_counter = 0
+        self.loop_depth = 0
         self.heap_counter = 0
 
         self.started = False
@@ -82,6 +83,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         return []
 
     def visit_do_loop_statement(self, do_loop: ast.DoLoopStatement) -> List[str]:
+        self.loop_depth += 1
         current_do_loop_counter = self.do_loop_counter
         self.do_loop_counter += 1
 
@@ -97,12 +99,14 @@ class EWVMTranslator(ast.Translator[List[str]]):
         loop_end = self._generate_loop_end(
             current_do_loop_counter, current_heap_counter
         )
+        self.loop_depth -= 1
 
         return initialization + loop_condition + loop_body + loop_end
 
     def visit_do_plus_loop_statement(
         self, do_loop: ast.DoPlusLoopStatement
     ) -> List[str]:
+        self.loop_depth += 1
         current_do_loop_counter = self.do_loop_counter
         self.do_loop_counter += 1
 
@@ -118,6 +122,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         loop_end = self._generate_plus_loop_end(
             current_do_loop_counter, current_heap_counter
         )
+        self.loop_depth -= 1
 
         return initialization + loop_condition + loop_body + loop_end
 
@@ -177,6 +182,9 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_literal(self, literal: ast.Literal) -> List[str]:
         value = literal.content.lower()
+
+        if value == "j" and self.loop_depth < 2:
+            raise ast.TranslationError("j is only allowed inside a nested loop")
 
         if value in self.user_defined_functions:
             return self.user_defined_functions[value].evaluate(self)
