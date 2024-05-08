@@ -5,6 +5,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit import print_formatted_text, ANSI
 
 from ewvmapi.ewvm_api import run_code
+from forthpiler.utils import print_red
 from forthpiler.ewvm_translator import EWVMTranslator
 from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
@@ -61,7 +62,7 @@ def main():
                 try:
                     mode.action(result)
                 except ast.TranslationError as e:
-                    print_formatted_text(ANSI(f"\x1b[31m{str(e)}"))
+                    print_red(str(e))
                     continue
 
 
