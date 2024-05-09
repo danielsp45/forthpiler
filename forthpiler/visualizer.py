@@ -49,6 +49,20 @@ class GraphvizTranslator(syntax.Translator[str]):
         self.graph.edge(e_id, ast_id)
         return e_id
 
+    def visit_begin_until_statement(self, begin_until_loop: BeginUntilStatement) -> str:
+        e_id = self.get_new_id()
+        self.graph.node(e_id, f"BeginUntilStatement")
+        ast_id = self.translate(begin_until_loop.body)
+        self.graph.edge(e_id, ast_id)
+        return e_id
+
+    def visit_begin_again_statement(self, begin_again_loop: BeginAgainStatement) -> str:
+        e_id = self.get_new_id()
+        self.graph.node(e_id, f"BeginAgainStatement")
+        ast_id = self.translate(begin_again_loop.body)
+        self.graph.edge(e_id, ast_id)
+        return e_id
+
     def visit_if_statement(self, if_statement: IfStatement) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, f"IfStatement")

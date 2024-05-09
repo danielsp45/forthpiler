@@ -37,6 +37,10 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
+    def visit_begin_again_statement(self, begin_again: BeginAgainStatement) -> T:
+        pass
+
+    @abstractmethod
     def visit_if_statement(self, if_statement: IfStatement) -> T:
         pass
 
@@ -271,6 +275,24 @@ class BeginUntilStatement(Expression):
     @override
     def evaluate(self, translator: Translator):
         return translator.visit_begin_until_statement(self)
+
+
+class BeginAgainStatement(Expression):
+    def __init__(self, ast: AbstractSyntaxTree):
+        super().__init__()
+        self.body = ast
+
+    @override
+    def __repr__(self):
+        return f"BeginAgainStatement(body={self.body})"
+
+    @override
+    def __eq__(self, other: BeginUntilStatement):
+        return self.body == other.body
+
+    @override
+    def evaluate(self, translator: Translator):
+        return translator.visit_begin_again_statement(self)
 
 
 class IfStatement(Expression):

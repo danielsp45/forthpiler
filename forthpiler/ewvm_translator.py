@@ -143,6 +143,20 @@ class EWVMTranslator(ast.Translator[List[str]]):
             f"jz startloop{current_do_loop_counter}",
         ]
 
+    def visit_begin_again_statement(
+        self, begin_until: ast.BeginUntilStatement
+    ) -> List[str]:
+        current_do_loop_counter = self.do_loop_counter
+        self.do_loop_counter += 1
+
+        body = begin_until.body.evaluate(self)
+
+        return [
+            f"startloop{current_do_loop_counter}:",
+            *body,
+            f"jump startloop{current_do_loop_counter}",
+        ]
+
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
         if if_statement.with_else:
             return self._visit_if_statement_with_else(if_statement)

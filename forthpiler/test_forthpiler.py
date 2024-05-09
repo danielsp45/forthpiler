@@ -362,3 +362,18 @@ def test_begin_until():
             ),
         ]
     )
+
+
+def test_begin_again():
+    code = """BEGIN ." Hello World" AGAIN"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            BeginUntilStatement(
+                AbstractSyntaxTree(
+                    [
+                        PrintString("Hello World"),
+                    ]
+                )
+            ),
+        ]
+    )

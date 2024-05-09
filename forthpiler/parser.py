@@ -171,6 +171,10 @@ class ForthParser:
         """loop_statement : BEGIN ast UNTIL"""
         p[0] = ast.BeginUntilStatement(p[2])
 
+    def p_begin_again_statement(self, p):
+        """loop_statement : BEGIN ast AGAIN"""
+        p[0] = ast.BeginAgainStatement(p[2])
+
     def p_error(self, p):
         if p:
             print(f"Syntax error at '{p.value}'")
