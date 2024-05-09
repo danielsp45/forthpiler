@@ -2,6 +2,7 @@ from enum import Enum
 
 from prompt_toolkit import PromptSession
 from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit import print_formatted_text, ANSI
 
 from ewvmapi.ewvm_api import run_code
 from forthpiler.ewvm_translator import EWVMTranslator
@@ -10,6 +11,10 @@ from forthpiler.parser import ForthParser
 from forthpiler.visualizer import visualize
 
 import forthpiler.syntax as ast
+
+
+def print_red(text: str) -> None:
+    print_formatted_text(ANSI(f"\x1b[31m{text}"))
 
 
 class InterpretingMode(Enum):
@@ -64,8 +69,13 @@ def main():
                 continue
 
             result: ast.AbstractSyntaxTree = parser.parse(s)
+
             if result:
-                mode.run_action(result, standard_lib_functions)
+                try:
+                    mode.run_action(result, standard_lib_functions)
+                except Exception as e:
+                    print_red(str(e))
+                    continue
 
 
 if __name__ == "__main__":

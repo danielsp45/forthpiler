@@ -21,6 +21,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self.user_declared_variables: List[str] = []
         self.if_counter = 0
         self.do_loop_counter = 0
+        self.loop_depth = 0
         self.heap_counter = 0
 
         self.started = False
@@ -42,11 +43,11 @@ class EWVMTranslator(ast.Translator[List[str]]):
             case ast.OperatorType.DIVIDE:
                 return ["div"]
             case ast.OperatorType.EXP:
-                raise NotImplementedError
+                raise NotImplementedError("Operator `exp` not implemented")
             case ast.OperatorType.MOD:
                 return ["mod"]
             case ast.OperatorType.SLASH_MOD:
-                raise NotImplementedError
+                raise NotImplementedError("Operator `slashmod` not implemented")
 
     def visit_comparison_operator(
         self, comparison_operator: ast.ComparisonOperator
@@ -77,12 +78,13 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_function(self, function: ast.Function) -> List[str]:
         if function.name in self.user_defined_functions:
-            raise ast.TranslationError(f"Function {function.name} already defined")
+            raise ast.TranslationError(f"Function `{function.name}` already defined")
 
         self.user_defined_functions[function.name] = function.ast
         return []
 
     def visit_do_loop_statement(self, do_loop: ast.DoLoopStatement) -> List[str]:
+        self.loop_depth += 1
         current_do_loop_counter = self.do_loop_counter
         self.do_loop_counter += 1
 
@@ -98,12 +100,14 @@ class EWVMTranslator(ast.Translator[List[str]]):
         loop_end = self._generate_loop_end(
             current_do_loop_counter, current_heap_counter
         )
+        self.loop_depth -= 1
 
         return initialization + loop_condition + loop_body + loop_end
 
     def visit_do_plus_loop_statement(
         self, do_loop: ast.DoPlusLoopStatement
     ) -> List[str]:
+        self.loop_depth += 1
         current_do_loop_counter = self.do_loop_counter
         self.do_loop_counter += 1
 
@@ -119,6 +123,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         loop_end = self._generate_plus_loop_end(
             current_do_loop_counter, current_heap_counter
         )
+        self.loop_depth -= 1
 
         return initialization + loop_condition + loop_body + loop_end
 
@@ -162,7 +167,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_store_variable(self, store_variable: ast.StoreVariable) -> List[str]:
         if store_variable.name not in self.user_declared_variables:
-            raise ast.TranslationError(f"Variable {store_variable.name} not declared")
+            raise ast.TranslationError(f"Variable `{store_variable.name}` not declared")
 
         variable_index = self.user_declared_variables.index(store_variable.name)
 
@@ -170,7 +175,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_fetch_variable(self, fetch_variable: ast.FetchVariable) -> List[str]:
         if fetch_variable.name not in self.user_declared_variables:
-            raise ast.TranslationError(f"Variable {fetch_variable.name} not declared")
+            raise ast.TranslationError(f"Variable `{fetch_variable.name}` not declared")
 
         variable_index = self.user_declared_variables.index(fetch_variable.name)
 
@@ -179,13 +184,16 @@ class EWVMTranslator(ast.Translator[List[str]]):
     def visit_literal(self, literal: ast.Literal) -> List[str]:
         value = literal.content.lower()
 
+        if value == "j" and self.loop_depth < 2:
+            raise ast.TranslationError("`j` is only allowed inside a nested loop")
+
         if value in self.user_defined_functions:
             return self.user_defined_functions[value].evaluate(self)
 
         if value in self.predefined_functions:
             return self.predefined_functions[value]
 
-        raise ast.TranslationError(f"Literal {value} not found")
+        raise ast.TranslationError(f"Literal `{value}` not found")
 
     def visit_print_string(self, print_string: ast.PrintString) -> List[str]:
         return [f'pushs "{print_string.content}"', 'writes']
