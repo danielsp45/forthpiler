@@ -8,9 +8,9 @@ from ewvmapi.ewvm_api import run_code
 from forthpiler.ewvm_translator import EWVMTranslator
 from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
-from forthpiler.syntax import AbstractSyntaxTree
-import forthpiler.syntax as ast
 from forthpiler.visualizer import visualize
+
+import forthpiler.syntax as ast
 
 
 def print_red(text: str) -> None:
@@ -18,23 +18,29 @@ def print_red(text: str) -> None:
 
 
 class InterpretingMode(Enum):
-    PARSE = ("parse >> ", lambda result: print(result.__repr__()))
-    TRANSLATE = (
-        "translate >> ",
-        lambda result: print("\n".join(result.evaluate(EWVMTranslator()))),
-    )
-    RUN = (
-        "run >> ",
-        lambda result: print(run_code("\n".join(result.evaluate(EWVMTranslator())))),
-    )
-    VISUALIZE = (
-        "visualize >> ",
-        lambda result: visualize(result),
-    )
+    PARSE, TRANSLATE, RUN, VISUALIZE = range(4)
 
-    def __init__(self, prefix, action):
-        self.prefix = prefix
-        self.action = action
+    def get_prefix(self):
+        match self:
+            case InterpretingMode.PARSE:
+                return "parse >> "
+            case InterpretingMode.TRANSLATE:
+                return "translate >> "
+            case InterpretingMode.RUN:
+                return "run >> "
+            case InterpretingMode.VISUALIZE:
+                return "visualize >> "
+
+    def run_action(self, result, standard_lib_functions: list[ast.Function]):
+        match self:
+            case InterpretingMode.PARSE:
+                print(result.__repr__())
+            case InterpretingMode.TRANSLATE:
+                print("\n".join(result.evaluate(EWVMTranslator(standard_lib_functions))))
+            case InterpretingMode.RUN:
+                print(f"'{run_code("\n".join(result.evaluate(EWVMTranslator(standard_lib_functions))))}'")
+            case InterpretingMode.VISUALIZE:
+                visualize(result)
 
 
 def main():
@@ -46,11 +52,14 @@ def main():
     print(f"Starting in {mode.name}.")
     print(f"Change to other interpreter modes with {', '.join(commands)}")
 
+    standard_lib_functions = [('spaces', '0 DO SPACE LOOP ')]
+    standard_lib_functions = [ast.Function(name, parser.parse(f)) for (name, f) in standard_lib_functions]
+
     session = PromptSession()
     with patch_stdout():
         while True:
             try:
-                s = session.prompt(mode.prefix)
+                s = session.prompt(mode.get_prefix())
             except (EOFError, KeyboardInterrupt):
                 break
 
@@ -63,7 +72,7 @@ def main():
 
             if result:
                 try:
-                    mode.action(result)
+                    mode.run_action(result, standard_lib_functions)
                 except Exception as e:
                     print_red(str(e))
                     continue
