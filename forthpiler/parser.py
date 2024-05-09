@@ -21,6 +21,30 @@ class ForthParser:
         """grammar : expression grammar"""
         p[0] = [p[1]] + p[2]
 
+    def p_code_block(self, p):
+        """code_block : compound_statements"""
+        p[0] = ast.AbstractSyntaxTree(p[1])
+
+    def p_compound_statements_expression(self, p):
+        """compound_statements : compound_statement compound_statements"""
+        p[0] = [p[1]] + p[2]
+
+    def p_compound_statements_empty(self, p):
+        """compound_statements :"""
+        p[0] = []
+
+    def p_compound_if_statement(self, p):
+        """compound_statement : if_statement"""
+        p[0] = p[1]
+
+    def p_compound_statement_loop(self, p):
+        """compound_statement : loop_statement"""
+        p[0] = p[1]
+
+    def p_compound_statement_expression(self, p):
+        """compound_statement : expression"""
+        p[0] = p[1]
+
     def p_expression_number(self, p):
         """expression : NUMBER"""
         p[0] = ast.Number(p[1])
@@ -37,10 +61,6 @@ class ForthParser:
         """expression : function"""
         p[0] = p[1]
 
-    def p_expression_if_statement(self, p):
-        """expression : if_statement"""
-        p[0] = p[1]
-
     def p_expression_variable_declaration(self, p):
         """expression : VARIABLE_DECLARATION LITERAL"""
         p[0] = ast.VariableDeclaration(p[2])
@@ -52,10 +72,6 @@ class ForthParser:
     def p_expression_fetch(self, p):
         """expression : LITERAL FETCH"""
         p[0] = ast.FetchVariable(p[1])
-
-    def p_expression_loop_statement(self, p):
-        """expression : loop_statement"""
-        p[0] = p[1]
 
     def p_expression_literal(self, p):
         """expression : LITERAL"""
@@ -148,23 +164,23 @@ class ForthParser:
         )
 
     def p_function(self, p):
-        """function : COLON LITERAL ast SEMI_COLON"""
+        """function : COLON LITERAL code_block SEMI_COLON"""
         p[0] = ast.Function(p[2], p[3])
 
     def p_if_statement_without_else(self, p):
-        """if_statement : IF ast THEN"""
+        """if_statement : IF code_block THEN"""
         p[0] = ast.IfStatement(p[2], None)
 
     def p_if_statement_with_else(self, p):
-        """if_statement : IF ast ELSE ast THEN"""
+        """if_statement : IF code_block ELSE code_block THEN"""
         p[0] = ast.IfStatement(p[2], p[4])
 
     def p_do_statement_normal(self, p):
-        """loop_statement : DO ast LOOP"""
+        """loop_statement : DO code_block LOOP"""
         p[0] = ast.DoLoopStatement(p[2])
 
     def p_do_statement_plus(self, p):
-        """loop_statement : DO ast PLUS_LOOP"""
+        """loop_statement : DO code_block PLUS_LOOP"""
         p[0] = ast.DoPlusLoopStatement(p[2])
 
     def p_error(self, p):

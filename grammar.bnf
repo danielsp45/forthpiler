@@ -1,12 +1,19 @@
 grammar : expression grammar
         |
 
+code_block : compound_statements
+
+compound_statements : compound_statement compound_statements
+                    |
+
+compound_statement : if_statement
+                   | loop_statement
+                   | expression
+
 expression : NUMBER
            | operator
            | comparison_operator
            | function
-           | if_statement
-           | loop_statement
            | LITERAL
            | PRINT_STRING
            | CHAR_FUNC
@@ -34,10 +41,10 @@ comparison_operator : EQUALS
                     | ZERO_GREATER_THAN
                     | ZERO_GREATER_THAN_OR_EQUAL_TO
 
-function : COLON LITERAL grammar SEMI_COLON
+function : COLON LITERAL code_block SEMI_COLON
 
-if_statement : IF grammar THEN
-             | IF grammar ELSE grammar THEN
+if_statement : IF code_block THEN
+             | IF code_block ELSE code_block THEN
 
-loop_statement : DO grammar LOOP
-               | DO grammar PLUS_LOOP
+loop_statement : DO code_block LOOP
+               | DO code_block PLUS_LOOP
