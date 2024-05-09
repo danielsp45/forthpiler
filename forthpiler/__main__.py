@@ -68,7 +68,7 @@ def main():
                 print(f"Mode changed to {mode.name}")
                 continue
 
-            result: AbstractSyntaxTree = parser.parse(s)
+            result: ast.AbstractSyntaxTree = parser.parse(s)
 
             if result:
                 try:

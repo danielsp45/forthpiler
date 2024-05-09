@@ -43,11 +43,11 @@ class EWVMTranslator(ast.Translator[List[str]]):
             case ast.OperatorType.DIVIDE:
                 return ["div"]
             case ast.OperatorType.EXP:
-                raise NotImplementedError
+                raise NotImplementedError("Operator `exp` not implemented")
             case ast.OperatorType.MOD:
                 return ["mod"]
             case ast.OperatorType.SLASH_MOD:
-                raise NotImplementedError
+                raise NotImplementedError("Operator `slashmod` not implemented")
 
     def visit_comparison_operator(
         self, comparison_operator: ast.ComparisonOperator
