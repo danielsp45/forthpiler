@@ -7,6 +7,7 @@ from forthpiler.syntax import (
     DoLoopStatement,
     FetchVariable,
     Function,
+    IfStatement,
     Literal,
     Number,
     Operator,
@@ -77,6 +78,19 @@ def test_literal():
     )
 
 
+def test_simple_function():
+    code = """: two 2 ; two"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Function(
+                "two",
+                AbstractSyntaxTree([Number(2)]),
+            ),
+            Literal("two"),
+        ]
+    )
+
+
 def test_function():
     code = """: add 3 4 + ; add"""
     assert parser.parse(code) == AbstractSyntaxTree(
@@ -127,35 +141,20 @@ def test_comparison_operators():
     )
 
 
-def test_do_loop():
+def test_do_loop_outside_function():
     code = """10 0 DO I . LOOP"""
-    assert parser.parse(code) == AbstractSyntaxTree(
-        [
-            Number(10),
-            Number(0),
-            DoLoopStatement(
-                AbstractSyntaxTree(
-                    [
-                        Literal("I"),
-                        Literal("."),
-                    ]
-                )
-            ),
-        ]
-    )
+    assert parser.parse(code) == AbstractSyntaxTree([])
 
 
-def test_nested_do_loop():
-    code = """10 0 DO ." LINE: " 2 0 DO I . LOOP CR LOOP"""
+def test_do_loop_inside_function():
+    code = """: iter 10 0 do i . loop ; iter"""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            Number(10),
-            Number(0),
-            DoLoopStatement(
+            Function(
+                "iter",
                 AbstractSyntaxTree(
                     [
-                        PrintString("LINE: "),
-                        Number(2),
+                        Number(10),
                         Number(0),
                         DoLoopStatement(
                             AbstractSyntaxTree(
@@ -165,29 +164,78 @@ def test_nested_do_loop():
                                 ]
                             )
                         ),
-                        Literal("CR"),
                     ]
-                )
+                ),
             ),
+            Literal("iter"),
+        ]
+    )
+
+
+def test_nested_do_loop_outside_function():
+    code = """10 0 DO ." LINE: " 2 0 DO I . LOOP CR LOOP"""
+    assert parser.parse(code) == AbstractSyntaxTree([])
+
+
+def test_nested_do_loop():
+    code = """: nested 10 0 DO ." LINE: " 2 0 DO I . LOOP CR LOOP ; nested"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Function(
+                "nested",
+                AbstractSyntaxTree(
+                    [
+                        Number(10),
+                        Number(0),
+                        DoLoopStatement(
+                            AbstractSyntaxTree(
+                                [
+                                    PrintString("LINE: "),
+                                    Number(2),
+                                    Number(0),
+                                    DoLoopStatement(
+                                        AbstractSyntaxTree(
+                                            [
+                                                Literal("I"),
+                                                Literal("."),
+                                            ]
+                                        )
+                                    ),
+                                    Literal("CR"),
+                                ]
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            Literal("nested"),
         ]
     )
 
 
 def test_do_plus_loop():
-    code = """10 0 DO I . 1 +LOOP"""
+    code = """: doplus 10 0 DO I . 1 +LOOP ; doplus"""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            Number(10),
-            Number(0),
-            DoLoopStatement(
+            Function(
+                "doplus",
                 AbstractSyntaxTree(
                     [
-                        Literal("I"),
-                        Literal("."),
-                        Number(1),
+                        Number(10),
+                        Number(0),
+                        DoLoopStatement(
+                            AbstractSyntaxTree(
+                                [
+                                    Literal("I"),
+                                    Literal("."),
+                                    Number(1),
+                                ]
+                            )
+                        ),
                     ]
-                )
+                ),
             ),
+            Literal("doplus"),
         ]
     )
 
@@ -226,5 +274,41 @@ def test_complex_variable_operations():
             Number(31),
             Number(3),
             Literal("STOREDATE"),
+        ]
+    )
+
+
+def test_if_statement_outside_function():
+    code = """1 2 = IF 3 ELSE 4 THEN"""
+    assert parser.parse(code) == AbstractSyntaxTree([])
+
+
+def test_if_statement_inside_function():
+    code = """: test 1 2 = if 3 else 4 then ; test"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Function(
+                "test",
+                AbstractSyntaxTree(
+                    [
+                        Number(1),
+                        Number(2),
+                        ComparisonOperator(ComparisonOperatorType.EQUALS),
+                        IfStatement(
+                            AbstractSyntaxTree(
+                                [
+                                    Number(3),
+                                ]
+                            ),
+                            AbstractSyntaxTree(
+                                [
+                                    Number(4),
+                                ]
+                            ),
+                        ),
+                    ]
+                ),
+            ),
+            Literal("test"),
         ]
     )
