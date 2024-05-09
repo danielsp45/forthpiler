@@ -4,7 +4,7 @@ import forthpiler.syntax as ast
 
 
 class EWVMTranslator(ast.Translator[List[str]]):
-    def __init__(self):
+    def __init__(self, standard_lib_functions: List[ast.Function]):
         self.predefined_functions: Dict[str, List[str]] = {
             ".": ["writei"],
             "emit": ["writechr"],
@@ -17,8 +17,6 @@ class EWVMTranslator(ast.Translator[List[str]]):
             "i": ["i"],
             "j": ["j"],
         }
-        self.spaces_call_counter = 0
-
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
         self.user_declared_variables: List[str] = []
         self.if_counter = 0
@@ -26,6 +24,9 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self.heap_counter = 0
 
         self.started = False
+
+        for standard_lib_function in standard_lib_functions:
+            self.predefined_functions[standard_lib_function.name] = self.visit_function(standard_lib_function)
 
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
@@ -184,29 +185,13 @@ class EWVMTranslator(ast.Translator[List[str]]):
         if value in self.predefined_functions:
             return self.predefined_functions[value]
 
-        if value == "spaces":
-            current_spaces_call_counter = self.spaces_call_counter
-            self.spaces_call_counter += 1
-            return [
-                f"spaces{current_spaces_call_counter}:",
-                "pushi 32",
-                "writechr",
-                "pushi 1",
-                "sub",
-                "dup 1",
-                "pushi 0",
-                "equal",
-                f"jz spaces{current_spaces_call_counter}",
-                "pop 1",
-            ]
-
         raise ast.TranslationError(f"Literal {value} not found")
 
     def visit_print_string(self, print_string: ast.PrintString) -> List[str]:
-        return [f'pushs "{print_string.content}"\nwrites']
+        return [f'pushs "{print_string.content}"', 'writes']
 
     def visit_char_function(self, char_function: ast.CharFunction) -> List[str]:
-        return [f'pushs "{char_function.content}"\nchrcode']
+        return [f'pushs "{char_function.content}"', 'chrcode']
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
         if not self.started:
