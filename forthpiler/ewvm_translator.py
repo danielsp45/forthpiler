@@ -27,7 +27,9 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self.started = False
 
         for standard_lib_function in standard_lib_functions:
-            self.predefined_functions[standard_lib_function.name] = self.visit_function(standard_lib_function)
+            self.predefined_functions[standard_lib_function.name] = self.visit_function(
+                standard_lib_function
+            )
 
     def visit_number(self, number: ast.Number) -> List[str]:
         return [f"pushi {number.number}"]
@@ -127,6 +129,20 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
         return initialization + loop_condition + loop_body + loop_end
 
+    def visit_begin_until_statement(
+        self, begin_until: ast.BeginUntilStatement
+    ) -> List[str]:
+        current_do_loop_counter = self.do_loop_counter
+        self.do_loop_counter += 1
+
+        body = begin_until.body.evaluate(self)
+
+        return [
+            f"startloop{current_do_loop_counter}:",
+            *body,
+            f"jz startloop{current_do_loop_counter}",
+        ]
+
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
         if if_statement.with_else:
             return self._visit_if_statement_with_else(if_statement)
@@ -196,10 +212,10 @@ class EWVMTranslator(ast.Translator[List[str]]):
         raise ast.TranslationError(f"Literal `{value}` not found")
 
     def visit_print_string(self, print_string: ast.PrintString) -> List[str]:
-        return [f'pushs "{print_string.content}"', 'writes']
+        return [f'pushs "{print_string.content}"', "writes"]
 
     def visit_char_function(self, char_function: ast.CharFunction) -> List[str]:
-        return [f'pushs "{char_function.content}"', 'chrcode']
+        return [f'pushs "{char_function.content}"', "chrcode"]
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
         if not self.started:

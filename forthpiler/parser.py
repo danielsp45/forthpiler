@@ -167,6 +167,10 @@ class ForthParser:
         """loop_statement : DO ast PLUS_LOOP"""
         p[0] = ast.DoPlusLoopStatement(p[2])
 
+    def p_begin_until_statement(self, p):
+        """loop_statement : BEGIN ast UNTIL"""
+        p[0] = ast.BeginUntilStatement(p[2])
+
     def p_error(self, p):
         if p:
             print(f"Syntax error at '{p.value}'")

@@ -12,6 +12,8 @@ class ForthLex(object):
         "do": "DO",
         "loop": "LOOP",
         "+loop": "PLUS_LOOP",
+        "begin": "BEGIN",
+        "until": "UNTIL",
         "variable": "VARIABLE_DECLARATION",
         "!": "STORE",
         "@": "FETCH",

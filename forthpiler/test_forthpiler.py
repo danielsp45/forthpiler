@@ -2,6 +2,7 @@ from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
 from forthpiler.syntax import (
     AbstractSyntaxTree,
+    BeginUntilStatement,
     ComparisonOperator,
     ComparisonOperatorType,
     DoLoopStatement,
@@ -338,5 +339,26 @@ def test_complex_variable_operations():
             Number(31),
             Number(3),
             Literal("STOREDATE"),
+        ]
+    )
+
+
+def test_begin_until():
+    code = """10 BEGIN 1 + DUP . 20 < UNTIL"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Number(10),
+            BeginUntilStatement(
+                AbstractSyntaxTree(
+                    [
+                        Number(1),
+                        Operator(OperatorType.PLUS),
+                        Literal("DUP"),
+                        Literal("."),
+                        Number(20),
+                        ComparisonOperator(ComparisonOperatorType.LESS_THAN),
+                    ]
+                )
+            ),
         ]
     )
