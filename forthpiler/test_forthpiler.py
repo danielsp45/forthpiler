@@ -7,6 +7,7 @@ from forthpiler.syntax import (
     DoLoopStatement,
     FetchVariable,
     Function,
+    IfStatement,
     Literal,
     Number,
     Operator,
@@ -78,14 +79,23 @@ def test_literal():
 
 
 def test_function():
-    code = """: add 3 4 + ; add"""
+    code = """: AVERAGE ( a b -- avg ) + 2/ ; 10 20 AVERAGE ."""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
             Function(
-                "add",
-                AbstractSyntaxTree([Number(3), Number(4), Operator(OperatorType.PLUS)]),
+                "average",
+                AbstractSyntaxTree(
+                    [
+                        Operator(OperatorType.PLUS),
+                        Number(2),
+                        Operator(OperatorType.DIVIDE),
+                    ]
+                ),
             ),
-            Literal("add"),
+            Number(10),
+            Number(20),
+            Literal("average"),
+            Literal("."),
         ]
     )
 
@@ -173,6 +183,42 @@ def test_nested_do_loop():
     )
 
 
+def test_nested_do_loop_in_function():
+    code = """: nested 10 0 DO ." LINE: " 2 0 DO I . LOOP CR LOOP ; nested"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Function(
+                "nested",
+                AbstractSyntaxTree(
+                    [
+                        Number(10),
+                        Number(0),
+                        DoLoopStatement(
+                            AbstractSyntaxTree(
+                                [
+                                    PrintString("LINE: "),
+                                    Number(2),
+                                    Number(0),
+                                    DoLoopStatement(
+                                        AbstractSyntaxTree(
+                                            [
+                                                Literal("I"),
+                                                Literal("."),
+                                            ]
+                                        )
+                                    ),
+                                    Literal("CR"),
+                                ]
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            Literal("nested"),
+        ]
+    )
+
+
 def test_do_plus_loop():
     code = """10 0 DO I . 1 +LOOP"""
     assert parser.parse(code) == AbstractSyntaxTree(
@@ -188,6 +234,72 @@ def test_do_plus_loop():
                     ]
                 )
             ),
+        ]
+    )
+
+
+def test_if_statement():
+    code = """1 2 = if 3 then"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Number(1),
+            Number(2),
+            ComparisonOperator(ComparisonOperatorType.EQUALS),
+            IfStatement(AbstractSyntaxTree([Number(3)]), None),
+        ]
+    )
+
+
+def test_simple_if_else_statement():
+    code = """1 2 = if 3 else 4 then"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Number(1),
+            Number(2),
+            ComparisonOperator(ComparisonOperatorType.EQUALS),
+            IfStatement(
+                AbstractSyntaxTree(
+                    [
+                        Number(3),
+                    ]
+                ),
+                AbstractSyntaxTree(
+                    [
+                        Number(4),
+                    ]
+                ),
+            ),
+        ]
+    )
+
+
+def test_if_else_statement_inside_function():
+    code = """: test 1 2 = if 3 else 4 then ; test"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Function(
+                "test",
+                AbstractSyntaxTree(
+                    [
+                        Number(1),
+                        Number(2),
+                        ComparisonOperator(ComparisonOperatorType.EQUALS),
+                        IfStatement(
+                            AbstractSyntaxTree(
+                                [
+                                    Number(3),
+                                ]
+                            ),
+                            AbstractSyntaxTree(
+                                [
+                                    Number(4),
+                                ]
+                            ),
+                        ),
+                    ]
+                ),
+            ),
+            Literal("test"),
         ]
     )
 
