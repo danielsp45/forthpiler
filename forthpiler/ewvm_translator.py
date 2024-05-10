@@ -203,6 +203,10 @@ class EWVMTranslator(ast.Translator[List[str]]):
         return []
 
     def visit_store_variable(self, store_variable: ast.StoreVariable) -> List[str]:
+        if store_variable.name in self.user_declared_constants:
+            raise ast.TranslationError(
+                f"Cannot reassign a value to constant `{store_variable.name}`"
+            )
         if store_variable.name not in self.user_declared_variables:
             raise ast.TranslationError(f"Variable `{store_variable.name}` not declared")
 
