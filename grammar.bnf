@@ -11,6 +11,7 @@ expression : NUMBER
            | PRINT_STRING
            | CHAR_FUNC
            | VARIABLE_DECLARATION LITERAL
+           | CONSTANT_DECLARATION LITERAL
            | LITERAL STORE
            | LITERAL FETCH
 

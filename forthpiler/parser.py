@@ -45,6 +45,10 @@ class ForthParser:
         """expression : VARIABLE_DECLARATION LITERAL"""
         p[0] = ast.VariableDeclaration(p[2])
 
+    def p_expression_constant_declaration(self, p):
+        """expression : CONSTANT_DECLARATION LITERAL"""
+        p[0] = ast.ConstantDeclaration(p[2])
+
     def p_expression_store(self, p):
         """expression : LITERAL STORE"""
         p[0] = ast.StoreVariable(p[1])

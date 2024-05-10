@@ -16,6 +16,7 @@ from forthpiler.syntax import (
     PrintString,
     StoreVariable,
     VariableDeclaration,
+    ConstantDeclaration,
 )
 
 lexer = ForthLex().build()
@@ -375,5 +376,19 @@ def test_begin_again():
                     ]
                 )
             ),
+        ]
+    )
+
+
+def test_constant_definition():
+    code = """220 CONSTANT LIMIT 10 LIMIT + ."""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            Number(220),
+            ConstantDeclaration("LIMIT"),
+            Number(10),
+            Literal("LIMIT"),
+            Operator(OperatorType.PLUS),
+            Literal("."),
         ]
     )

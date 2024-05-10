@@ -18,7 +18,11 @@ class EWVMTranslator(ast.Translator[List[str]]):
             "j": ["j"],
         }
         self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
-        self.user_declared_variables: List[str] = []
+
+        self.declared_entities_counter = 0
+        self.user_declared_variables: Dict[str, int] = {}
+        self.user_declared_constants: Dict[str, int] = {}
+
         self.if_counter = 0
         self.do_loop_counter = 0
         self.loop_depth = 0
@@ -191,7 +195,10 @@ class EWVMTranslator(ast.Translator[List[str]]):
     def visit_variable_declaration(
         self, variable_declaration: ast.VariableDeclaration
     ) -> List[str]:
-        self.user_declared_variables.append(variable_declaration.name)
+        self.user_declared_variables[
+            variable_declaration.name
+        ] = self.declared_entities_counter
+        self.declared_entities_counter += 1
 
         return []
 
@@ -199,7 +206,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         if store_variable.name not in self.user_declared_variables:
             raise ast.TranslationError(f"Variable `{store_variable.name}` not declared")
 
-        variable_index = self.user_declared_variables.index(store_variable.name)
+        variable_index = self.user_declared_variables[store_variable.name]
 
         return [f"storeg {variable_index}"]
 
@@ -207,9 +214,19 @@ class EWVMTranslator(ast.Translator[List[str]]):
         if fetch_variable.name not in self.user_declared_variables:
             raise ast.TranslationError(f"Variable `{fetch_variable.name}` not declared")
 
-        variable_index = self.user_declared_variables.index(fetch_variable.name)
+        variable_index = self.user_declared_variables[fetch_variable.name]
 
         return [f"pushg {variable_index}"]
+
+    def visit_constant_declaration(
+        self, constant_declaration: ast.ConstantDeclaration
+    ) -> List[str]:
+        variable_index = self.declared_entities_counter
+        self.declared_entities_counter += 1
+
+        self.user_declared_constants[constant_declaration.name] = variable_index
+
+        return [f"storeg {variable_index}"]
 
     def visit_literal(self, literal: ast.Literal) -> List[str]:
         value = literal.content.lower()
@@ -222,6 +239,13 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
         if value in self.predefined_functions:
             return self.predefined_functions[value]
+
+        if value in self.user_declared_constants:
+            variable_index = self.user_declared_constants[value]
+            return [f"pushg {variable_index}"]
+
+        if value in self.user_declared_variables:
+            raise ast.TranslationError(f"Bad use of variable `{value}`")
 
         raise ast.TranslationError(f"Literal `{value}` not found")
 
@@ -237,7 +261,10 @@ class EWVMTranslator(ast.Translator[List[str]]):
             code = [res for expr in ast.expressions for res in expr.evaluate(self)]
 
             code.insert(0, f"start")
-            for _ in range(len(self.user_declared_variables)):
+            total_variables = len(self.user_declared_variables) + len(
+                self.user_declared_constants
+            )
+            for _ in range(total_variables):
                 code.insert(0, f"pushi 0")
             code.append("stop")
         else:

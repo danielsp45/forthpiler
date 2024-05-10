@@ -16,6 +16,7 @@ class ForthLex(object):
         "until": "UNTIL",
         "again": "AGAIN",
         "variable": "VARIABLE_DECLARATION",
+        "constant": "CONSTANT_DECLARATION",
         "!": "STORE",
         "@": "FETCH",
     }

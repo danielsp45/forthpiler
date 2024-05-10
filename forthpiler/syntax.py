@@ -51,6 +51,12 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
+    def visit_constant_declaration(
+        self, constant_declaration: ConstantDeclaration
+    ) -> T:
+        pass
+
+    @abstractmethod
     def visit_store_variable(self, store_variable: StoreVariable) -> T:
         pass
 
@@ -334,6 +340,24 @@ class VariableDeclaration(Expression):
     @override
     def evaluate(self, translator: Translator):
         return translator.visit_variable_declaration(self)
+
+
+class ConstantDeclaration(Expression):
+    def __init__(self, name: str):
+        super().__init__()
+        self.name = name.lower()
+
+    @override
+    def __repr__(self):
+        return f"ConstantDeclaration(name={self.name})"
+
+    @override
+    def __eq__(self, other):
+        return self.name == other.name
+
+    @override
+    def evaluate(self, translator: Translator):
+        return translator.visit_constant_declaration(self)
 
 
 class StoreVariable(Expression):
