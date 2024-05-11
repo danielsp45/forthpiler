@@ -17,7 +17,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
             "i": ["i"],
             "j": ["j"],
         }
-        self.user_defined_words: Dict[str, ast.AbstractSyntaxTree] = {}
+        self.user_defined_words: Dict[str, List[str]] = {}
 
         self.declared_entities_counter = 0
         self.user_declared_variables: Dict[str, int] = {}
@@ -237,7 +237,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
             raise ast.TranslationError("'j' is only allowed inside a nested loop")
 
         if value in self.user_defined_words:
-            return self.user_defined_words[value].evaluate(self)
+            return self.user_defined_words[value]
 
         if value in self.predefined_words:
             return self.predefined_words[value]
