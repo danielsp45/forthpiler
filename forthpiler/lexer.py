@@ -45,7 +45,7 @@ class ForthLex(object):
         "SEMI_COLON",
         "LITERAL",
         "PRINT_STRING",
-        "CHAR_FUNC",
+        "CHAR_WORD",
     ] + list(reserved.values())
 
     # Literals are not defined with the built-in `literals` definition
@@ -110,7 +110,7 @@ class ForthLex(object):
         r"""MOD"""
         return t
 
-    def t_CHAR_FUNC(self, t):
+    def t_CHAR_WORD(self, t):
         r"""(?i:CHAR)\s([^\s]+)"""
         t.value = ord(t.value[len("CHAR ")])
         return t

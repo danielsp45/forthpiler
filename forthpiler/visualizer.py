@@ -28,7 +28,7 @@ class GraphvizTranslator(syntax.Translator[str]):
         self.graph.node(e_id, str(comparison_operator), shape="box")
         return e_id
 
-    def visit_function(self, word: Word) -> str:
+    def visit_word(self, word: Word) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, f"Word(name={word.name})")
         ast_id = self.translate(word.ast)
@@ -89,6 +89,13 @@ class GraphvizTranslator(syntax.Translator[str]):
         self.graph.node(e_id, str(variable_declaration), shape="box")
         return e_id
 
+    def visit_constant_declaration(
+        self, constant_declaration: ConstantDeclaration
+    ) -> str:
+        e_id = self.get_new_id()
+        self.graph.node(e_id, str(constant_declaration), shape="box")
+        return e_id
+
     def visit_store_variable(self, store_variable: StoreVariable) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, str(store_variable), shape="box")
@@ -109,9 +116,9 @@ class GraphvizTranslator(syntax.Translator[str]):
         self.graph.node(e_id, str(print_string), shape="box")
         return e_id
 
-    def visit_char_function(self, char_function: CharFunction) -> str:
+    def visit_char_word(self, char_word: CharWord) -> str:
         e_id = self.get_new_id()
-        self.graph.node(e_id, str(char_function), shape="box")
+        self.graph.node(e_id, str(char_word), shape="box")
         return e_id
 
     def translate(self, ast: AbstractSyntaxTree) -> str:

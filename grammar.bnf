@@ -4,7 +4,7 @@ grammar : expression grammar
 expression : NUMBER
            | operator
            | comparison_operator
-           | function
+           | word
            | if_statement
            | loop_statement
            | LITERAL
@@ -35,7 +35,7 @@ comparison_operator : EQUALS
                     | ZERO_GREATER_THAN
                     | ZERO_GREATER_THAN_OR_EQUAL_TO
 
-function : COLON LITERAL grammar SEMI_COLON
+word : COLON LITERAL grammar SEMI_COLON
 
 if_statement : IF grammar THEN
              | IF grammar ELSE grammar THEN

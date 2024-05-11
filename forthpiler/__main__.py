@@ -29,20 +29,16 @@ class InterpretingMode(Enum):
             case InterpretingMode.VISUALIZE:
                 return "visualize >> "
 
-    def run_action(self, result, standard_lib_functions: list[ast.Word]):
+    def run_action(self, result, standard_lib_words: list[ast.Word]):
         match self:
             case InterpretingMode.PARSE:
                 print(result.__repr__())
             case InterpretingMode.TRANSLATE:
-                print(
-                    "\n".join(result.evaluate(EWVMTranslator(standard_lib_functions)))
-                )
+                print("\n".join(result.evaluate(EWVMTranslator(standard_lib_words))))
             case InterpretingMode.RUN:
                 print(
                     run_code(
-                        "\n".join(
-                            result.evaluate(EWVMTranslator(standard_lib_functions))
-                        )
+                        "\n".join(result.evaluate(EWVMTranslator(standard_lib_words)))
                     )
                 )
             case InterpretingMode.VISUALIZE:
@@ -58,9 +54,9 @@ def main():
     print(f"Starting in {mode.name}.")
     print(f"Change to other interpreter modes with {', '.join(commands)}")
 
-    standard_lib_functions = [("spaces", "0 DO SPACE LOOP")]
-    standard_lib_functions = [
-        ast.Word(name, parser.parse(f)) for (name, f) in standard_lib_functions
+    standard_lib_words = [("spaces", "0 DO SPACE LOOP")]
+    standard_lib_words = [
+        ast.Word(name, parser.parse(f)) for (name, f) in standard_lib_words
     ]
 
     session = PromptSession()
@@ -80,7 +76,7 @@ def main():
 
             if result:
                 try:
-                    mode.run_action(result, standard_lib_functions)
+                    mode.run_action(result, standard_lib_words)
                 except Exception as e:
                     print_red(str(e))
                     continue

@@ -70,8 +70,8 @@ class ForthParser:
         p[0] = ast.PrintString(p[1])
 
     def p_expression_char_function(self, p):
-        """expression : CHAR_FUNC"""
-        p[0] = ast.CharFunction(p[1])
+        """expression : CHAR_WORD"""
+        p[0] = ast.CharWord(p[1])
 
     def p_operator_plus(self, p):
         """operator : PLUS"""

@@ -4,7 +4,7 @@ import forthpiler.syntax as ast
 
 
 class EWVMTranslator(ast.Translator[List[str]]):
-    def __init__(self, standard_lib_functions: List[ast.Word]):
+    def __init__(self, standard_lib_words: List[ast.Word]):
         self.predefined_words: Dict[str, List[str]] = {
             ".": ["writei"],
             "emit": ["writechr"],
@@ -30,9 +30,9 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
         self.started = False
 
-        for standard_lib_function in standard_lib_functions:
-            self.predefined_words[standard_lib_function.name] = self.visit_word(
-                standard_lib_function
+        for standard_lib_word in standard_lib_words:
+            self.predefined_words[standard_lib_word.name] = self.visit_word(
+                standard_lib_word
             )
 
     def visit_number(self, number: ast.Number) -> List[str]:
@@ -84,7 +84,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_word(self, word: ast.Word) -> List[str]:
         if word.name in self.user_defined_words:
-            raise ast.TranslationError(f"Function '{word.name}' already defined")
+            raise ast.TranslationError(f"Word '{word.name}' already defined")
 
         self.user_defined_words[word.name] = word.ast.evaluate(self)
         return []
@@ -254,8 +254,8 @@ class EWVMTranslator(ast.Translator[List[str]]):
     def visit_print_string(self, print_string: ast.PrintString) -> List[str]:
         return [f'pushs "{print_string.content}"', "writes"]
 
-    def visit_char_function(self, char_function: ast.CharFunction) -> List[str]:
-        return [f'pushi {char_function.char_code}']
+    def visit_char_word(self, char_word: ast.CharWord) -> List[str]:
+        return [f"pushi {char_word.content}"]
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
         if not self.started:

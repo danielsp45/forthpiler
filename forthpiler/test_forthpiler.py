@@ -381,9 +381,9 @@ def test_char():
     code = """CHAR H 72 CHAR ."""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            CharFunction(ord("H")),
+            CharWord(ord("H")),
             Number(72),
-            CharFunction(ord(".")),
+            CharWord(ord(".")),
         ]
     )
 
@@ -392,7 +392,7 @@ def test_char_string():
     code = """CHAR BOAS 34"""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            CharFunction(ord('B')),
+            CharWord(ord("B")),
             Number(34),
         ]
     )
@@ -402,7 +402,7 @@ def test_char_quotes():
     code = """CHAR " """
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            CharFunction(ord('"')),
+            CharWord(ord('"')),
         ]
     )
 
@@ -411,6 +411,6 @@ def test_char_char():
     code = """CHAR CHAR"""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            CharFunction(ord("C")),
+            CharWord(ord("C")),
         ]
     )

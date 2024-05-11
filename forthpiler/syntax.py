@@ -21,7 +21,7 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def visit_word(self, function: Word) -> T:
+    def visit_word(self, word: Word) -> T:
         pass
 
     @abstractmethod
@@ -46,13 +46,13 @@ class Translator(ABC, Generic[T]):
 
     @abstractmethod
     def visit_variable_declaration(
-            self, variable_declaration: VariableDeclaration
+        self, variable_declaration: VariableDeclaration
     ) -> T:
         pass
 
     @abstractmethod
     def visit_constant_declaration(
-            self, constant_declaration: ConstantDeclaration
+        self, constant_declaration: ConstantDeclaration
     ) -> T:
         pass
 
@@ -73,7 +73,7 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def visit_char_function(self, char_function: CharFunction) -> T:
+    def visit_char_word(self, char_word: CharWord) -> T:
         pass
 
     @abstractmethod
@@ -303,7 +303,7 @@ class BeginAgainStatement(Expression):
 
 class IfStatement(Expression):
     def __init__(
-            self, if_true: AbstractSyntaxTree, if_false: Optional[AbstractSyntaxTree]
+        self, if_true: AbstractSyntaxTree, if_false: Optional[AbstractSyntaxTree]
     ):
         super().__init__()
         self.if_true = if_true
@@ -414,22 +414,22 @@ class PrintString(Expression):
         return translator.visit_print_string(self)
 
 
-class CharFunction(Expression):
-    def __init__(self, char_code: int):
+class CharWord(Expression):
+    def __init__(self, content: str):
         super().__init__()
-        self.char_code = char_code
+        self.content = content
 
     @override
     def __repr__(self):
-        return f"CharFunction('{self.char_code}')"
+        return f"CharWord('{self.content}')"
 
     @override
     def __eq__(self, other):
-        return self.char_code == other.char_code
+        return self.content == other.content
 
     @override
     def evaluate(self, translator: Translator):
-        return translator.visit_char_function(self)
+        return translator.visit_char_word(self)
 
 
 class AbstractSyntaxTree:
