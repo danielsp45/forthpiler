@@ -21,7 +21,7 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def visit_word(self, function: Function) -> T:
+    def visit_word(self, function: Word) -> T:
         pass
 
     @abstractmethod

@@ -28,10 +28,10 @@ class GraphvizTranslator(syntax.Translator[str]):
         self.graph.node(e_id, str(comparison_operator), shape="box")
         return e_id
 
-    def visit_function(self, function: Function) -> str:
+    def visit_function(self, word: Word) -> str:
         e_id = self.get_new_id()
-        self.graph.node(e_id, f"Function(name={function.name})")
-        ast_id = self.translate(function.ast)
+        self.graph.node(e_id, f"Word(name={word.name})")
+        ast_id = self.translate(word.ast)
         self.graph.edge(e_id, ast_id)
         return e_id
 

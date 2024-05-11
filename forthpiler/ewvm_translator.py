@@ -4,7 +4,7 @@ import forthpiler.syntax as ast
 
 
 class EWVMTranslator(ast.Translator[List[str]]):
-    def __init__(self, standard_lib_functions: List[ast.Function]):
+    def __init__(self, standard_lib_functions: List[ast.Word]):
         self.predefined_words: Dict[str, List[str]] = {
             ".": ["writei"],
             "emit": ["writechr"],
@@ -82,7 +82,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
             case ast.ComparisonOperatorType.ZERO_GREATER_THAN_OR_EQUAL_TO:
                 return ["pushi 0", "supeq"]
 
-    def visit_word(self, word: ast.Function) -> List[str]:
+    def visit_word(self, word: ast.Word) -> List[str]:
         if word.name in self.user_defined_words:
             raise ast.TranslationError(f"Function '{word.name}' already defined")
 

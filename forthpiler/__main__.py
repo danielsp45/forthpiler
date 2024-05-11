@@ -29,7 +29,7 @@ class InterpretingMode(Enum):
             case InterpretingMode.VISUALIZE:
                 return "visualize >> "
 
-    def run_action(self, result, standard_lib_functions: list[ast.Function]):
+    def run_action(self, result, standard_lib_functions: list[ast.Word]):
         match self:
             case InterpretingMode.PARSE:
                 print(result.__repr__())
@@ -60,7 +60,7 @@ def main():
 
     standard_lib_functions = [("spaces", "0 DO SPACE LOOP")]
     standard_lib_functions = [
-        ast.Function(name, parser.parse(f)) for (name, f) in standard_lib_functions
+        ast.Word(name, parser.parse(f)) for (name, f) in standard_lib_functions
     ]
 
     session = PromptSession()
