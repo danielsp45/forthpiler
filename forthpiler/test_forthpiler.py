@@ -8,7 +8,7 @@ from forthpiler.syntax import (
     ConstantDeclaration,
     DoLoopStatement,
     FetchVariable,
-    Function,
+    Word,
     IfStatement,
     Literal,
     Number,
@@ -80,11 +80,11 @@ def test_literal():
     )
 
 
-def test_function():
+def test_word():
     code = """: AVERAGE ( a b -- avg ) + 2/ ; 10 20 AVERAGE ."""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            Function(
+            Word(
                 "average",
                 AbstractSyntaxTree(
                     [
@@ -185,11 +185,11 @@ def test_nested_do_loop():
     )
 
 
-def test_nested_do_loop_in_function():
+def test_nested_do_loop_in_word():
     code = """: nested 10 0 DO ." LINE: " 2 0 DO I . LOOP CR LOOP ; nested"""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            Function(
+            Word(
                 "nested",
                 AbstractSyntaxTree(
                     [
@@ -275,11 +275,11 @@ def test_simple_if_else_statement():
     )
 
 
-def test_if_else_statement_inside_function():
+def test_if_else_statement_inside_word():
     code = """: test 1 2 = if 3 else 4 then ; test"""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
-            Function(
+            Word(
                 "test",
                 AbstractSyntaxTree(
                     [
@@ -326,7 +326,7 @@ def test_complex_variable_operations():
             VariableDeclaration("DATE"),
             VariableDeclaration("MONTH"),
             VariableDeclaration("YEAR"),
-            Function(
+            Word(
                 "STOREDATE",
                 AbstractSyntaxTree(
                     [

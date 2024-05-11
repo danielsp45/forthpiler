@@ -21,7 +21,7 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def visit_function(self, function: Function) -> T:
+    def visit_word(self, function: Function) -> T:
         pass
 
     @abstractmethod
@@ -210,7 +210,7 @@ class Literal(Expression):
         return translator.visit_literal(self)
 
 
-class Function(Expression):
+class Word(Expression):
     def __init__(self, name: str, ast: AbstractSyntaxTree):
         super().__init__()
         self.name = name.lower()
@@ -218,15 +218,15 @@ class Function(Expression):
 
     @override
     def __repr__(self):
-        return f"Function(name={self.name}, ast={self.ast})"
+        return f"Word(name={self.name}, ast={self.ast})"
 
     @override
-    def __eq__(self, other: Function):
+    def __eq__(self, other: Word):
         return self.name == other.name and self.ast == other.ast
 
     @override
     def evaluate(self, translator: Translator):
-        return translator.visit_function(self)
+        return translator.visit_word(self)
 
 
 class DoLoopStatement(Expression):

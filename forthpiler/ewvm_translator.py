@@ -5,7 +5,7 @@ import forthpiler.syntax as ast
 
 class EWVMTranslator(ast.Translator[List[str]]):
     def __init__(self, standard_lib_functions: List[ast.Function]):
-        self.predefined_functions: Dict[str, List[str]] = {
+        self.predefined_words: Dict[str, List[str]] = {
             ".": ["writei"],
             "emit": ["writechr"],
             "space": ["pushi 32", "writechr"],  # 32 is ASCII code for space
@@ -17,7 +17,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
             "i": ["i"],
             "j": ["j"],
         }
-        self.user_defined_functions: Dict[str, ast.AbstractSyntaxTree] = {}
+        self.user_defined_words: Dict[str, ast.AbstractSyntaxTree] = {}
 
         self.declared_entities_counter = 0
         self.user_declared_variables: Dict[str, int] = {}
@@ -31,7 +31,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self.started = False
 
         for standard_lib_function in standard_lib_functions:
-            self.predefined_functions[standard_lib_function.name] = self.visit_function(
+            self.predefined_words[standard_lib_function.name] = self.visit_word(
                 standard_lib_function
             )
 
@@ -82,11 +82,11 @@ class EWVMTranslator(ast.Translator[List[str]]):
             case ast.ComparisonOperatorType.ZERO_GREATER_THAN_OR_EQUAL_TO:
                 return ["pushi 0", "supeq"]
 
-    def visit_function(self, function: ast.Function) -> List[str]:
-        if function.name in self.user_defined_functions:
-            raise ast.TranslationError(f"Function '{function.name}' already defined")
+    def visit_word(self, word: ast.Function) -> List[str]:
+        if word.name in self.user_defined_words:
+            raise ast.TranslationError(f"Function '{word.name}' already defined")
 
-        self.user_defined_functions[function.name] = function.ast
+        self.user_defined_words[word.name] = word.ast.evaluate(self)
         return []
 
     def visit_do_loop_statement(self, do_loop: ast.DoLoopStatement) -> List[str]:
@@ -236,11 +236,11 @@ class EWVMTranslator(ast.Translator[List[str]]):
         if value == "j" and self.loop_depth < 2:
             raise ast.TranslationError("'j' is only allowed inside a nested loop")
 
-        if value in self.user_defined_functions:
-            return self.user_defined_functions[value].evaluate(self)
+        if value in self.user_defined_words:
+            return self.user_defined_words[value].evaluate(self)
 
-        if value in self.predefined_functions:
-            return self.predefined_functions[value]
+        if value in self.predefined_words:
+            return self.predefined_words[value]
 
         if value in self.user_declared_constants:
             variable_index = self.user_declared_constants[value]

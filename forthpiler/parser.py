@@ -33,8 +33,8 @@ class ForthParser:
         """expression : comparison_operator"""
         p[0] = p[1]
 
-    def p_expression_function(self, p):
-        """expression : function"""
+    def p_expression_word(self, p):
+        """expression : word"""
         p[0] = p[1]
 
     def p_expression_if_statement(self, p):
@@ -151,9 +151,9 @@ class ForthParser:
             ast.ComparisonOperatorType.ZERO_GREATER_THAN_OR_EQUAL_TO
         )
 
-    def p_function(self, p):
-        """function : COLON LITERAL ast SEMI_COLON"""
-        p[0] = ast.Function(p[2], p[3])
+    def p_word(self, p):
+        """word : COLON LITERAL ast SEMI_COLON"""
+        p[0] = ast.Word(p[2], p[3])
 
     def p_if_statement_without_else(self, p):
         """if_statement : IF ast THEN"""
