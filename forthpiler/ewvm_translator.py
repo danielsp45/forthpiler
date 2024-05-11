@@ -255,7 +255,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         return [f'pushs "{print_string.content}"', "writes"]
 
     def visit_char_function(self, char_function: ast.CharFunction) -> List[str]:
-        return [f'pushi {char_function.content}']
+        return [f'pushi {char_function.char_code}']
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
         if not self.started:

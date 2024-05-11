@@ -46,13 +46,13 @@ class Translator(ABC, Generic[T]):
 
     @abstractmethod
     def visit_variable_declaration(
-        self, variable_declaration: VariableDeclaration
+            self, variable_declaration: VariableDeclaration
     ) -> T:
         pass
 
     @abstractmethod
     def visit_constant_declaration(
-        self, constant_declaration: ConstantDeclaration
+            self, constant_declaration: ConstantDeclaration
     ) -> T:
         pass
 
@@ -303,7 +303,7 @@ class BeginAgainStatement(Expression):
 
 class IfStatement(Expression):
     def __init__(
-        self, if_true: AbstractSyntaxTree, if_false: Optional[AbstractSyntaxTree]
+            self, if_true: AbstractSyntaxTree, if_false: Optional[AbstractSyntaxTree]
     ):
         super().__init__()
         self.if_true = if_true
@@ -415,17 +415,17 @@ class PrintString(Expression):
 
 
 class CharFunction(Expression):
-    def __init__(self, content: str):
+    def __init__(self, char_code: int):
         super().__init__()
-        self.content = content
+        self.char_code = char_code
 
     @override
     def __repr__(self):
-        return f"CharFunction('{self.content}')"
+        return f"CharFunction('{self.char_code}')"
 
     @override
     def __eq__(self, other):
-        return self.content == other.content
+        return self.char_code == other.char_code
 
     @override
     def evaluate(self, translator: Translator):

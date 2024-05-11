@@ -1,23 +1,6 @@
 from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
-from forthpiler.syntax import (
-    AbstractSyntaxTree,
-    BeginUntilStatement,
-    ComparisonOperator,
-    ComparisonOperatorType,
-    ConstantDeclaration,
-    DoLoopStatement,
-    FetchVariable,
-    Word,
-    IfStatement,
-    Literal,
-    Number,
-    Operator,
-    OperatorType,
-    PrintString,
-    StoreVariable,
-    VariableDeclaration,
-)
+from forthpiler.syntax import *
 
 lexer = ForthLex().build()
 parser = ForthParser(lexer)
@@ -390,5 +373,44 @@ def test_constant_definition():
             Literal("LIMIT"),
             Operator(OperatorType.PLUS),
             Literal("."),
+        ]
+    )
+
+
+def test_char():
+    code = """CHAR H 72 CHAR ."""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            CharFunction(ord("H")),
+            Number(72),
+            CharFunction(ord(".")),
+        ]
+    )
+
+
+def test_char_string():
+    code = """CHAR BOAS 34"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            CharFunction(ord('B')),
+            Number(34),
+        ]
+    )
+
+
+def test_char_quotes():
+    code = """CHAR " """
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            CharFunction(ord('"')),
+        ]
+    )
+
+
+def test_char_char():
+    code = """CHAR CHAR"""
+    assert parser.parse(code) == AbstractSyntaxTree(
+        [
+            CharFunction(ord("C")),
         ]
     )
