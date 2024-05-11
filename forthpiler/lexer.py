@@ -111,14 +111,14 @@ class ForthLex(object):
         return t
 
     def t_CHAR_FUNC(self, t):
-        r"""[cC][hH][aA][rR]\s."""
-        t.value = t.value[-1]
+        r"""(?i:CHAR)\s([^\s]+)"""
+        t.value = ord(t.value[len("CHAR ")])
         return t
 
     # This is defined as a single rule, in order to avoid conflicts
     # with the operator PLUS
     def t_PLUS_LOOP(self, t):
-        r"\+[lL][oO][oO][pP]"
+        r"\+(?i:LOOP)"
         t.type = self.reserved.get(t.value.lower(), "PLUS_LOOP")
         return t
 
