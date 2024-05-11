@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Generic, List, Optional, TypeVar, override
 
+from typing_extensions import override
+
 T = TypeVar("T", bound="Translator")
 
 

@@ -1,16 +1,14 @@
 from enum import Enum
 
-from prompt_toolkit import PromptSession
+from prompt_toolkit import ANSI, PromptSession, print_formatted_text
 from prompt_toolkit.patch_stdout import patch_stdout
-from prompt_toolkit import print_formatted_text, ANSI
 
+import forthpiler.syntax as ast
 from ewvmapi.ewvm_api import run_code
 from forthpiler.ewvm_translator import EWVMTranslator
 from forthpiler.lexer import ForthLex
 from forthpiler.parser import ForthParser
 from forthpiler.visualizer import visualize
-
-import forthpiler.syntax as ast
 
 
 def print_red(text: str) -> None:
@@ -36,9 +34,17 @@ class InterpretingMode(Enum):
             case InterpretingMode.PARSE:
                 print(result.__repr__())
             case InterpretingMode.TRANSLATE:
-                print("\n".join(result.evaluate(EWVMTranslator(standard_lib_functions))))
+                print(
+                    "\n".join(result.evaluate(EWVMTranslator(standard_lib_functions)))
+                )
             case InterpretingMode.RUN:
-                print(f"'{run_code("\n".join(result.evaluate(EWVMTranslator(standard_lib_functions))))}'")
+                print(
+                    run_code(
+                        "\n".join(
+                            result.evaluate(EWVMTranslator(standard_lib_functions))
+                        )
+                    )
+                )
             case InterpretingMode.VISUALIZE:
                 visualize(result)
 
@@ -52,8 +58,10 @@ def main():
     print(f"Starting in {mode.name}.")
     print(f"Change to other interpreter modes with {', '.join(commands)}")
 
-    standard_lib_functions = [('spaces', '0 DO SPACE LOOP ')]
-    standard_lib_functions = [ast.Function(name, parser.parse(f)) for (name, f) in standard_lib_functions]
+    standard_lib_functions = [("spaces", "0 DO SPACE LOOP")]
+    standard_lib_functions = [
+        ast.Function(name, parser.parse(f)) for (name, f) in standard_lib_functions
+    ]
 
     session = PromptSession()
     with patch_stdout():

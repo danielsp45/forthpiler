@@ -5,6 +5,7 @@ from forthpiler.syntax import (
     BeginUntilStatement,
     ComparisonOperator,
     ComparisonOperatorType,
+    ConstantDeclaration,
     DoLoopStatement,
     FetchVariable,
     Function,
@@ -16,7 +17,6 @@ from forthpiler.syntax import (
     PrintString,
     StoreVariable,
     VariableDeclaration,
-    ConstantDeclaration,
 )
 
 lexer = ForthLex().build()

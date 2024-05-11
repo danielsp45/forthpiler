@@ -24,7 +24,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self.user_declared_constants: Dict[str, int] = {}
 
         self.if_counter = 0
-        self.do_loop_counter = 0
+        self.loop_counter = 0
         self.loop_depth = 0
         self.heap_counter = 0
 
@@ -84,15 +84,15 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_function(self, function: ast.Function) -> List[str]:
         if function.name in self.user_defined_functions:
-            raise ast.TranslationError(f"Function `{function.name}` already defined")
+            raise ast.TranslationError(f"Function '{function.name}' already defined")
 
         self.user_defined_functions[function.name] = function.ast
         return []
 
     def visit_do_loop_statement(self, do_loop: ast.DoLoopStatement) -> List[str]:
         self.loop_depth += 1
-        current_do_loop_counter = self.do_loop_counter
-        self.do_loop_counter += 1
+        current_loop_counter = self.loop_counter
+        self.loop_counter += 1
 
         current_heap_counter = self.heap_counter
         self.heap_counter += 1
@@ -100,12 +100,10 @@ class EWVMTranslator(ast.Translator[List[str]]):
         body = do_loop.body.evaluate(self)
         initialization = self._generate_loop_initialization(current_heap_counter)
         loop_condition = self._generate_loop_condition(
-            current_do_loop_counter, current_heap_counter
+            current_loop_counter, current_heap_counter
         )
         loop_body = self._generate_loop_body(body, current_heap_counter)
-        loop_end = self._generate_loop_end(
-            current_do_loop_counter, current_heap_counter
-        )
+        loop_end = self._generate_loop_end(current_loop_counter, current_heap_counter)
         self.loop_depth -= 1
 
         return initialization + loop_condition + loop_body + loop_end
@@ -114,8 +112,8 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self, do_loop: ast.DoPlusLoopStatement
     ) -> List[str]:
         self.loop_depth += 1
-        current_do_loop_counter = self.do_loop_counter
-        self.do_loop_counter += 1
+        current_loop_counter = self.loop_counter
+        self.loop_counter += 1
 
         current_heap_counter = self.heap_counter
         self.heap_counter += 1
@@ -123,11 +121,11 @@ class EWVMTranslator(ast.Translator[List[str]]):
         body = do_loop.body.evaluate(self)
         initialization = self._generate_plus_loop_initialization(current_heap_counter)
         loop_condition = self._generate_plus_loop_condition(
-            current_do_loop_counter, current_heap_counter
+            current_loop_counter, current_heap_counter
         )
         loop_body = self._generate_loop_body(body, current_heap_counter)
         loop_end = self._generate_plus_loop_end(
-            current_do_loop_counter, current_heap_counter
+            current_loop_counter, current_heap_counter
         )
         self.loop_depth -= 1
 
@@ -136,29 +134,29 @@ class EWVMTranslator(ast.Translator[List[str]]):
     def visit_begin_until_statement(
         self, begin_until: ast.BeginUntilStatement
     ) -> List[str]:
-        current_do_loop_counter = self.do_loop_counter
-        self.do_loop_counter += 1
+        current_loop_counter = self.loop_counter
+        self.loop_counter += 1
 
         body = begin_until.body.evaluate(self)
 
         return [
-            f"startloop{current_do_loop_counter}:",
+            f"startloop{current_loop_counter}:",
             *body,
-            f"jz startloop{current_do_loop_counter}",
+            f"jz startloop{current_loop_counter}",
         ]
 
     def visit_begin_again_statement(
         self, begin_until: ast.BeginUntilStatement
     ) -> List[str]:
-        current_do_loop_counter = self.do_loop_counter
-        self.do_loop_counter += 1
+        current_loop_counter = self.loop_counter
+        self.loop_counter += 1
 
         body = begin_until.body.evaluate(self)
 
         return [
-            f"startloop{current_do_loop_counter}:",
+            f"startloop{current_loop_counter}:",
             *body,
-            f"jump startloop{current_do_loop_counter}",
+            f"jump startloop{current_loop_counter}",
         ]
 
     def visit_if_statement(self, if_statement: ast.IfStatement) -> List[str]:
@@ -205,10 +203,10 @@ class EWVMTranslator(ast.Translator[List[str]]):
     def visit_store_variable(self, store_variable: ast.StoreVariable) -> List[str]:
         if store_variable.name in self.user_declared_constants:
             raise ast.TranslationError(
-                f"Cannot reassign a value to constant `{store_variable.name}`"
+                f"Cannot reassign a value to constant '{store_variable.name}'"
             )
         if store_variable.name not in self.user_declared_variables:
-            raise ast.TranslationError(f"Variable `{store_variable.name}` not declared")
+            raise ast.TranslationError(f"Variable '{store_variable.name}' not declared")
 
         variable_index = self.user_declared_variables[store_variable.name]
 
@@ -216,7 +214,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
 
     def visit_fetch_variable(self, fetch_variable: ast.FetchVariable) -> List[str]:
         if fetch_variable.name not in self.user_declared_variables:
-            raise ast.TranslationError(f"Variable `{fetch_variable.name}` not declared")
+            raise ast.TranslationError(f"Variable '{fetch_variable.name}' not declared")
 
         variable_index = self.user_declared_variables[fetch_variable.name]
 
@@ -236,7 +234,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         value = literal.content.lower()
 
         if value == "j" and self.loop_depth < 2:
-            raise ast.TranslationError("`j` is only allowed inside a nested loop")
+            raise ast.TranslationError("'j' is only allowed inside a nested loop")
 
         if value in self.user_defined_functions:
             return self.user_defined_functions[value].evaluate(self)
@@ -249,9 +247,9 @@ class EWVMTranslator(ast.Translator[List[str]]):
             return [f"pushg {variable_index}"]
 
         if value in self.user_declared_variables:
-            raise ast.TranslationError(f"Bad use of variable `{value}`")
+            raise ast.TranslationError(f"Bad use of variable '{value}'")
 
-        raise ast.TranslationError(f"Literal `{value}` not found")
+        raise ast.TranslationError(f"Literal '{value}' not found")
 
     def visit_print_string(self, print_string: ast.PrintString) -> List[str]:
         return [f'pushs "{print_string.content}"', "writes"]
@@ -303,40 +301,40 @@ class EWVMTranslator(ast.Translator[List[str]]):
         ]
 
     def _generate_plus_loop_condition(
-        self, current_do_loop_counter: int, current_heap_counter: int
+        self, current_loop_counter: int, current_heap_counter: int
     ) -> List[str]:
         return [
-            f"startloop{current_do_loop_counter}:",
+            f"startloop{current_loop_counter}:",
             f"pushst {current_heap_counter}",
             "load 0",
             "dup 1",
             f"pushst {current_heap_counter}",
             "load 2",
             "sup",
-            f"jz ifreverseloop{current_do_loop_counter}",
+            f"jz ifreverseloop{current_loop_counter}",
             f"pushst {current_heap_counter}",
             "load 1",
             "sup",
-            f"jump elsereverseloop{current_do_loop_counter}",
-            f"ifreverseloop{current_do_loop_counter}:",
+            f"jump elsereverseloop{current_loop_counter}",
+            f"ifreverseloop{current_loop_counter}:",
             f"pushst {current_heap_counter}",
             "load 1",
             "inf",
-            f"elsereverseloop{current_do_loop_counter}:",
-            f"jz endloop{current_do_loop_counter}",
+            f"elsereverseloop{current_loop_counter}:",
+            f"jz endloop{current_loop_counter}",
         ]
 
     def _generate_loop_condition(
-        self, current_do_loop_counter: int, current_heap_counter: int
+        self, current_loop_counter: int, current_heap_counter: int
     ) -> List[str]:
         return [
-            f"startloop{current_do_loop_counter}:",
+            f"startloop{current_loop_counter}:",
             f"pushst {current_heap_counter}",
             "load 0",
             f"pushst {current_heap_counter}",
             "load 1",
             "sup",
-            f"jz endloop{current_do_loop_counter}",
+            f"jz endloop{current_loop_counter}",
         ]
 
     def _generate_loop_body(
@@ -352,7 +350,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         return body
 
     def _generate_loop_end(
-        self, current_do_loop_counter: int, current_heap_counter: int
+        self, current_loop_counter: int, current_heap_counter: int
     ) -> List[str]:
         self.heap_counter -= 1
 
@@ -364,13 +362,13 @@ class EWVMTranslator(ast.Translator[List[str]]):
             f"pushst {current_heap_counter}",
             "swap",
             "store 1",
-            f"jump startloop{current_do_loop_counter}",
-            f"endloop{current_do_loop_counter}:",
+            f"jump startloop{current_loop_counter}",
+            f"endloop{current_loop_counter}:",
             "popst",
         ]
 
     def _generate_plus_loop_end(
-        self, current_do_loop_counter: int, current_heap_counter: int
+        self, current_loop_counter: int, current_heap_counter: int
     ) -> List[str]:
         self.heap_counter -= 1
 
@@ -381,7 +379,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
             f"pushst {current_heap_counter}",
             "swap",
             "store 1",
-            f"jump startloop{current_do_loop_counter}",
-            f"endloop{current_do_loop_counter}:",
+            f"jump startloop{current_loop_counter}",
+            f"endloop{current_loop_counter}:",
             "popst",
         ]
