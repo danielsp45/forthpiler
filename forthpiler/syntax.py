@@ -415,17 +415,17 @@ class PrintString(Expression):
 
 
 class CharWord(Expression):
-    def __init__(self, content: str):
+    def __init__(self, char_code: int):
         super().__init__()
-        self.content = content
+        self.char_code = char_code
 
     @override
     def __repr__(self):
-        return f"CharWord('{self.content}')"
+        return f"CharWord('{self.char_code}')"
 
     @override
     def __eq__(self, other):
-        return self.content == other.content
+        return self.char_code == other.char_code
 
     @override
     def evaluate(self, translator: Translator):

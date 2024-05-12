@@ -53,7 +53,12 @@ class EWVMTranslator(ast.Translator[List[str]]):
             case ast.OperatorType.MOD:
                 return ["mod"]
             case ast.OperatorType.SLASH_MOD:
-                raise NotImplementedError("Operator `slashmod` not implemented")
+                return (self.visit_literal(ast.Literal("2dup")) +
+                        self.visit_operator(ast.Operator(ast.OperatorType.DIVIDE)) +
+                        ["alloc 1", "swap", "store 0"] +
+                        self.visit_operator(ast.Operator(ast.OperatorType.MOD)) +
+                        [f"pushst {self.heap_counter}", "load 0", "popst"]
+                        )
 
     def visit_comparison_operator(
         self, comparison_operator: ast.ComparisonOperator
@@ -190,12 +195,8 @@ class EWVMTranslator(ast.Translator[List[str]]):
             f"endif{current_if_counter}:",
         ]
 
-    def visit_variable_declaration(
-        self, variable_declaration: ast.VariableDeclaration
-    ) -> List[str]:
-        self.user_declared_variables[
-            variable_declaration.name
-        ] = self.declared_entities_counter
+    def visit_variable_declaration(self, variable_declaration: ast.VariableDeclaration) -> List[str]:
+        self.user_declared_variables[variable_declaration.name] = self.declared_entities_counter
         self.declared_entities_counter += 1
 
         return []
@@ -255,7 +256,7 @@ class EWVMTranslator(ast.Translator[List[str]]):
         return [f'pushs "{print_string.content}"', "writes"]
 
     def visit_char_word(self, char_word: ast.CharWord) -> List[str]:
-        return [f"pushi {char_word.content}"]
+        return [f"pushi {char_word.char_code}"]
 
     def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
         if not self.started:
