@@ -27,7 +27,6 @@ class ForthLex(object):
         "MINUS",
         "TIMES",
         "DIVIDE",
-        "EXP",
         "MOD",
         "SLASH_MOD",
         "EQUALS",
@@ -55,7 +54,6 @@ class ForthLex(object):
     t_MINUS = r"-"
     t_TIMES = r"\*"
     t_DIVIDE = r"/"
-    t_EXP = r"\*\*"
     t_SLASH_MOD = r"\/MOD"
 
     t_EQUALS = r"="

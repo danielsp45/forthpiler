@@ -125,9 +125,8 @@ class OperatorType(Enum):
     MINUS = 2
     TIMES = 3
     DIVIDE = 4
-    EXP = 5
-    MOD = 6
-    SLASH_MOD = 7
+    MOD = 5
+    SLASH_MOD = 6
 
     def __eq__(self, other):
         return self.value == other.value

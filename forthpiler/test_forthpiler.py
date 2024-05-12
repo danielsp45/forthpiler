@@ -27,13 +27,13 @@ def test_complex_arithmetic():
 
 
 def test_all_operators():
-    code = """1 2 2 ** + 3 - 4 * 5 / 6 MOD 7 /MOD"""
+    code = """1 2 2 * + 3 - 4 * 5 / 6 MOD 7 /MOD"""
     assert parser.parse(code) == AbstractSyntaxTree(
         [
             Number(1),
             Number(2),
             Number(2),
-            Operator(OperatorType.EXP),
+            Operator(OperatorType.TIMES),
             Operator(OperatorType.PLUS),
             Number(3),
             Operator(OperatorType.MINUS),

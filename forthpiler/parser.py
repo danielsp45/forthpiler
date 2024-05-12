@@ -89,10 +89,6 @@ class ForthParser:
         """operator : DIVIDE"""
         p[0] = ast.Operator(ast.OperatorType.DIVIDE)
 
-    def p_operator_exp(self, p):
-        """operator : EXP"""
-        p[0] = ast.Operator(ast.OperatorType.EXP)
-
     def p_operator_mod(self, p):
         """operator : MOD"""
         p[0] = ast.Operator(ast.OperatorType.MOD)
