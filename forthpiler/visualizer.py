@@ -31,35 +31,35 @@ class GraphvizTranslator(syntax.Translator[str]):
     def visit_word(self, word: Word) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, f"Word(name={word.name})")
-        ast_id = self.translate(word.ast)
+        ast_id = self.visit_ast(word.ast)
         self.graph.edge(e_id, ast_id)
         return e_id
 
     def visit_do_loop_statement(self, do_loop: DoLoopStatement) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, f"DoLoopStatement")
-        ast_id = self.translate(do_loop.body)
+        ast_id = self.visit_ast(do_loop.body)
         self.graph.edge(e_id, ast_id)
         return e_id
 
     def visit_do_plus_loop_statement(self, do_loop: DoPlusLoopStatement) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, f"DoPlusLoopStatement")
-        ast_id = self.translate(do_loop.body)
+        ast_id = self.visit_ast(do_loop.body)
         self.graph.edge(e_id, ast_id)
         return e_id
 
     def visit_begin_until_statement(self, begin_until_loop: BeginUntilStatement) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, f"BeginUntilStatement")
-        ast_id = self.translate(begin_until_loop.body)
+        ast_id = self.visit_ast(begin_until_loop.body)
         self.graph.edge(e_id, ast_id)
         return e_id
 
     def visit_begin_again_statement(self, begin_again_loop: BeginAgainStatement) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, f"BeginAgainStatement")
-        ast_id = self.translate(begin_again_loop.body)
+        ast_id = self.visit_ast(begin_again_loop.body)
         self.graph.edge(e_id, ast_id)
         return e_id
 
@@ -69,28 +69,28 @@ class GraphvizTranslator(syntax.Translator[str]):
         if_true_id = self.get_new_id()
 
         self.graph.node(if_true_id, f"IfTrue")
-        if_true_ast_id = self.translate(if_statement.if_true)
+        if_true_ast_id = self.visit_ast(if_statement.if_true)
         self.graph.edge(e_id, if_true_id)
         self.graph.edge(if_true_id, if_true_ast_id)
 
         if if_statement.if_false is not None:
             if_false_id = self.get_new_id()
             self.graph.node(if_false_id, f"IfFalse")
-            if_false_ast_id = self.translate(if_statement.if_false)
+            if_false_ast_id = self.visit_ast(if_statement.if_false)
             self.graph.edge(e_id, if_false_id)
             self.graph.edge(if_false_id, if_false_ast_id)
 
         return e_id
 
     def visit_variable_declaration(
-        self, variable_declaration: VariableDeclaration
+            self, variable_declaration: VariableDeclaration
     ) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, str(variable_declaration), shape="box")
         return e_id
 
     def visit_constant_declaration(
-        self, constant_declaration: ConstantDeclaration
+            self, constant_declaration: ConstantDeclaration
     ) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, str(constant_declaration), shape="box")
@@ -121,13 +121,16 @@ class GraphvizTranslator(syntax.Translator[str]):
         self.graph.node(e_id, str(char_word), shape="box")
         return e_id
 
-    def translate(self, ast: AbstractSyntaxTree) -> str:
+    def visit_ast(self, ast: AbstractSyntaxTree) -> str:
         e_id = self.get_new_id()
         self.graph.node(e_id, f"AST(len={len(ast.expressions)})")
         for expression in ast.expressions:
             expression_id = expression.evaluate(self)
             self.graph.edge(e_id, expression_id)
         return e_id
+
+    def translate(self, ast: AbstractSyntaxTree) -> str:
+        return self.visit_ast(ast)
 
 
 def visualize(ast: syntax.AbstractSyntaxTree):

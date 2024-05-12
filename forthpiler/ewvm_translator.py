@@ -28,8 +28,6 @@ class EWVMTranslator(ast.Translator[List[str]]):
         self.loop_depth = 0
         self.heap_counter = 0
 
-        self.started = False
-
         for standard_lib_word in standard_lib_words:
             self.predefined_words[standard_lib_word.name] = self.visit_word(
                 standard_lib_word
@@ -256,20 +254,19 @@ class EWVMTranslator(ast.Translator[List[str]]):
     def visit_char_word(self, char_word: ast.CharWord) -> List[str]:
         return [f"pushi {char_word.char_code}"]
 
-    def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
-        if not self.started:
-            self.started = True
-            code = [res for expr in ast.expressions for res in expr.evaluate(self)]
+    def visit_ast(self, ast: ast.AbstractSyntaxTree) -> List[str]:
+        return [res for expr in ast.expressions for res in expr.evaluate(self)]
 
-            code.insert(0, f"start")
-            total_variables = len(self.user_declared_variables) + len(
-                self.user_declared_constants
-            )
-            for _ in range(total_variables):
-                code.insert(0, f"pushi 0")
-            code.append("stop")
-        else:
-            code = [res for expr in ast.expressions for res in expr.evaluate(self)]
+    def translate(self, ast: ast.AbstractSyntaxTree) -> List[str]:
+        code = ast.evaluate(self)
+
+        code.insert(0, f"start")
+        total_variables = len(self.user_declared_variables) + len(
+            self.user_declared_constants
+        )
+        for _ in range(total_variables):
+            code.insert(0, f"pushi 0")
+        code.append("stop")
 
         return code
 

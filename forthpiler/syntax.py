@@ -77,6 +77,10 @@ class Translator(ABC, Generic[T]):
         pass
 
     @abstractmethod
+    def visit_ast(self, ast: AbstractSyntaxTree) -> T:
+        pass
+
+    @abstractmethod
     def translate(self, ast: AbstractSyntaxTree) -> T:
         pass
 
@@ -443,4 +447,4 @@ class AbstractSyntaxTree:
         return self.expressions == other.expressions
 
     def evaluate(self, translator: Translator):
-        return translator.translate(self)
+        return translator.visit_ast(self)

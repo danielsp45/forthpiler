@@ -29,18 +29,20 @@ class InterpretingMode(Enum):
             case InterpretingMode.VISUALIZE:
                 return "visualize >> "
 
-    def run_action(self, result, standard_lib_words: list[ast.Word]):
+    def run_action(self, result: ast.AbstractSyntaxTree, standard_lib_words: list[ast.Word]):
         match self:
             case InterpretingMode.PARSE:
                 print(result.__repr__())
             case InterpretingMode.TRANSLATE:
-                print("\n".join(result.evaluate(EWVMTranslator(standard_lib_words))))
+                print("\n".join(
+                    EWVMTranslator(standard_lib_words).translate(result)
+                ))
             case InterpretingMode.RUN:
-                print(
-                    run_code(
-                        "\n".join(result.evaluate(EWVMTranslator(standard_lib_words)))
-                    )
-                )
+                print(run_code(
+                        "\n".join(
+                            EWVMTranslator(standard_lib_words).translate(result)
+                        )
+                ))
             case InterpretingMode.VISUALIZE:
                 visualize(result)
 
